@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "ExpenseServiceApplication",
+            "request": "launch",
+            "mainClass": "com.sakshambaranwal.expense_service.ExpenseServiceApplication",
+            "projectName": ""
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"

@@ -33,7 +33,3 @@
 - OAuth2 (Google, etc.)
 - JWT (via `jjwt` or Spring Security)
 
----
-
-## 📦 Microservices Structure
-
