@@ -1,11 +1,19 @@
 package com.sakshambaranwal.userservice.service;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sakshambaranwal.userservice.config.JwtService;
 import com.sakshambaranwal.userservice.config.UserDetailsImpl;
 import com.sakshambaranwal.userservice.entity.User;
 import com.sakshambaranwal.userservice.repository.UserRepository;
@@ -19,6 +27,12 @@ public class UserService {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    @Autowired
+    AuthenticationManager authenticationManager;
+
+    @Autowired
+    JwtService jwtService;
 
 
     public User addUser(User user) {
@@ -86,6 +100,27 @@ public class UserService {
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userDetails.getUser();
         return user;
+    }
+
+    public String login(String authHeader) {
+        String base64Credentials = authHeader.substring("Basic ".length());
+        byte[] credDecoded = Base64.getDecoder().decode(base64Credentials);
+        String credentials = new String(credDecoded, StandardCharsets.UTF_8);
+        String[] values = credentials.split(":", 2);
+        String username = values[0];
+        String password = values[1];
+        try {
+            // Authenticate user
+            Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password)
+            );
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            String jwt = jwtService.generateToken(userDetails.getUsername());
+            return jwt;
+
+        } catch (AuthenticationException ex) {
+            throw ex;
+        }
     }
 
     
