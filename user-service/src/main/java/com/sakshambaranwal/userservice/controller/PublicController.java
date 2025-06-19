@@ -38,4 +38,9 @@ public class PublicController {
             return new ResponseEntity<>("Internal server error"+(e.toString()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/ping")
+    public ResponseEntity<String> ping() {
+        return new ResponseEntity<>("pong", HttpStatus.OK);
+    }
 }
