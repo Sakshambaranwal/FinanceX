@@ -21,8 +21,8 @@ public class PublicController {
     @PostMapping("/register")
     public ResponseEntity<Object> register(@RequestBody User user) {
         try {
-            User createdUser = userService.addUser(user);
-            return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+            String jwt = userService.addUser(user);
+            return new ResponseEntity<>(jwt, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>("Internal server error"+(e.toString()), HttpStatus.INTERNAL_SERVER_ERROR);
         }

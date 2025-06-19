@@ -35,10 +35,22 @@ public class UserService {
     JwtService jwtService;
 
 
-    public User addUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword())); // Assuming password is already hashed
-        User userCreated = userRepository.save(user);
-        return userCreated;
+    public String addUser(User user) {
+        String oldPassword = user.getPassword();
+        user.setPassword(passwordEncoder.encode(user.getPassword())); 
+        try{
+            User userCreated = userRepository.save(user);
+            Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(userCreated.getUsername(), oldPassword)
+            );
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            String jwt = jwtService.generateToken(userDetails.getUsername());
+            return jwt;
+        }
+        catch (Exception e) {
+            System.out.println("User already exists or other error: " + e.getMessage());
+            throw new RuntimeException("User already exists");
+        }
     }
 
     @Transactional(readOnly = true)
