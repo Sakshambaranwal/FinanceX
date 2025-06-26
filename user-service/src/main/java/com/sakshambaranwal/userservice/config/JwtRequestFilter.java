@@ -34,7 +34,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if (token != null && token.startsWith("Bearer ")) {
             System.err.println("Token found in request header");
             jwt = token.substring(7);
-            username = jwtService.extractUsername(jwt);
+            try{
+                username = jwtService.extractUsername(jwt);
+            }catch (Exception e) {
+                
+                username=null;
+            }
         }
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null){
             System.err.println("Username found in request header: " + username);
@@ -46,7 +51,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
 
         }
-        response.setHeader("hello", "hello");
+        else{
+            System.err.println("SOMETHING WRONG WITH TOKEN");
+            //response.sendError(401, "Sonething wrong with token");
+        }
+        //response.setHeader("hello", "hello");
         filterChain.doFilter(request, response);
             
     }

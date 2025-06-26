@@ -55,8 +55,13 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public User getUser() {
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userDetails.getUser();
+        User user;
+        try{
+            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            user = userDetails.getUser();
+        }catch (Exception e) {
+            return null;
+        }
         return user;
     }
 
