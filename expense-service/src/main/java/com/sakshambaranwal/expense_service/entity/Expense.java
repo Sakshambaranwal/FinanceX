@@ -1,5 +1,7 @@
 package com.sakshambaranwal.expense_service.entity;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,7 +21,7 @@ public class Expense {
     private String id;
 
     private String username;
-    private String category;
+    private Object category;
     private double amount;
     private String description;
     private String date;
