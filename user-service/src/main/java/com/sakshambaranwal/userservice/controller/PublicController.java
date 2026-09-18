@@ -26,19 +26,26 @@ public class PublicController {
         try {
             String jwt = userService.addUser(user);
             return new ResponseEntity<>(jwt, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>("Internal server error"+(e.toString()), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
 
     @GetMapping("/login")
-    public ResponseEntity<Object> login(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<Object> login(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Basic ")) {
+            return new ResponseEntity<>("Missing or invalid Authorization header", HttpStatus.UNAUTHORIZED);
+        }
         try {
             String token = userService.login(authHeader);
             return new ResponseEntity<>(token, HttpStatus.OK);
+        } catch (org.springframework.security.core.AuthenticationException e) {
+            return new ResponseEntity<>("Invalid credentials", HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
-            return new ResponseEntity<>("Internal server error"+(e.toString()), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Login error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

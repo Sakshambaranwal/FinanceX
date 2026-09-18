@@ -17,14 +17,17 @@ import lombok.NoArgsConstructor;
 public class Expense {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     private String username;
-    private Object category;
+    private String category;
     private double amount;
     private String description;
     private String date;
     private String tags;
     private String payementMethod;
+    private Boolean recurring = false;
+    private String recurrenceFrequency = "MONTHLY";
+    private String currency = "USD";
 }

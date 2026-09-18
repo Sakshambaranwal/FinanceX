@@ -6,17 +6,20 @@ import {
   TrendingUp, 
   Users, 
   User, 
-  LogIn,
-  UserPlus,
-  Menu,
-  X,
-  DollarSign,
-  ArrowUpRight,
-  ArrowDownRight,
-  Eye,
-  EyeOff
+  LogIn, 
+  UserPlus, 
+  Menu, 
+  X, 
+  DollarSign, 
+  ArrowUpRight, 
+  ArrowDownRight, 
+  Eye, 
+  EyeOff,
+  Globe,
+  CreditCard
 } from 'lucide-react';
 import { useAppContext } from './AppContext';
+import { SUPPORTED_CURRENCIES } from './utils/currencyUtils';
 
 const FinanceApp = ({ children }) => {
   const location = useLocation();
@@ -29,6 +32,8 @@ const FinanceApp = ({ children }) => {
     setShowMobileMenu,
     showBalance,
     setShowBalance,
+    currency,
+    setCurrency,
   } = useAppContext();
 
   const navItems = [
@@ -36,10 +41,12 @@ const FinanceApp = ({ children }) => {
     { id: 'expenses', label: 'Expenses', icon: TrendingDown, path: '/expenses' },
     { id: 'investments', label: 'Investments', icon: TrendingUp, path: '/investments' },
     { id: 'p2p', label: 'P2P', icon: Users, path: '/p2p' },
+    { id: 'creditcards', label: 'Credit Cards', icon: CreditCard, path: '/creditcards' },
     { id: 'profile', label: 'Profile', icon: User, path: '/profile' },
   ];
 
   const authItems = [
+    { id: 'dashboard', label: 'Overview', icon: Home, path: '/dashboard' },
     { id: 'login', label: 'Login', icon: LogIn, path: '/login' },
     { id: 'signup', label: 'Sign Up', icon: UserPlus, path: '/signup' },
   ];
@@ -79,14 +86,26 @@ const FinanceApp = ({ children }) => {
               <DollarSign className="text-blue-600" size={32} />
               <h1 className="text-xl font-bold text-gray-900">FinanceX</h1>
             </div>
-            <Navigation />
-            {isAuthenticated && (
-              <div className="flex items-center space-x-4">
-                <button className="p-2 text-gray-600 hover:text-gray-900">
-                  <User size={20} />
-                </button>
-              </div>
-            )}
+            <div className="flex items-center space-x-4">
+              <Navigation />
+              {isAuthenticated && (
+                <div className="flex items-center space-x-1.5 pl-4 border-l border-gray-200">
+                  <Globe size={15} className="text-gray-400" />
+                  <select
+                    value={currency}
+                    onChange={(e) => setCurrency(e.target.value)}
+                    className="text-xs font-semibold bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer transition-colors"
+                    title="Session viewing currency (reverts on reload)"
+                  >
+                    {SUPPORTED_CURRENCIES.map(c => (
+                      <option key={c.code} value={c.code}>
+                        {c.code} ({c.symbol})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -98,6 +117,23 @@ const FinanceApp = ({ children }) => {
             <DollarSign className="text-blue-600" size={28} />
             <h1 className="text-lg font-bold text-gray-900">FinanceX</h1>
           </div>
+          {isAuthenticated && (
+            <div className="flex items-center space-x-1.5">
+              <Globe size={14} className="text-gray-400" />
+              <select
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+                className="text-xs font-semibold bg-gray-50 text-gray-700 border border-gray-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                title="Session viewing currency (reverts on reload)"
+              >
+                {SUPPORTED_CURRENCIES.map(c => (
+                  <option key={c.code} value={c.code}>
+                    {c.code} ({c.symbol})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
       </header>
 

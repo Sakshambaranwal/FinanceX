@@ -1,0 +1,20 @@
+# Centralized secrets
+.env
+.env.local
+*.env
+
+# Build outputs
+target/
+dist/
+node_modules/
+
+# Logs
+logs/
+*.log
+
+# OS & IDE
+.DS_Store
+.idea/
+*.iml
+.vscode/
+

@@ -33,6 +33,7 @@ public class User {
     @Column(nullable = false, unique = true, length = 50)
     private String username;
 
+    @com.fasterxml.jackson.annotation.JsonProperty(access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Column(unique = true)
@@ -49,12 +50,15 @@ public class User {
     @JoinColumn(name = "user_id")
     private List<Address> addresses;
 
+    @Column(length = 10)
+    private String currency = "USD";
+
     @Column(nullable = false)
-    private Boolean premium=false;
+    private Boolean premium = false;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Role role = Role.USER;
 
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();

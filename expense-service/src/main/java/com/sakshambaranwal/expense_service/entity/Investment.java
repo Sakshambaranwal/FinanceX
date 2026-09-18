@@ -1,23 +1,41 @@
 package com.sakshambaranwal.expense_service.entity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Entity
+@Table(name = "investments")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Investment {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     private String username;
-    private String category; // e.g., stocks, mutual funds, etc.
-    private String InvestmentName; // Name of the investment
+    private String category;
+    private String investmentName;
     private String quantity;
-    private String unitPrice; // Price per unit of the investment
+    private String unitPrice;
     private String currentPrice;
-    private double principalAmount; // Initial investment amount
-    private double currentAmount; // Current value of the investment
-    private double totalReturns; // Returns on the investment
-    private double riskLevel; // e.g., low, medium, high
+    private double principalAmount;
+    private double currentAmount;
+    private double totalReturns;
+    private String riskLevel;
+    @jakarta.persistence.Column(columnDefinition = "TEXT")
     private String description;
     private String investmentDate;
-    private String tags; // e.g., long-term, high-risk, etc.
-    private String paymentMethod; // e.g., bank transfer, credit card, etc.
+    private String maturityDate;
+    private Double maturityAmount;
+    @jakarta.persistence.Column(columnDefinition = "TEXT")
+    private String tags;
+    private String paymentMethod;
+    private String currency = "USD";
 }

@@ -38,7 +38,7 @@ public class UserController {
         }
     }
     @PostMapping("/user")
-    public ResponseEntity<Object> updateUser(User user) {
+    public ResponseEntity<Object> updateUser(@RequestBody User user) {
         try {
             User updatedUser = userService.updateUser(user);
             if (updatedUser != null) {

@@ -1,0 +1,1360 @@
+[
+  {
+    "bank": "HDFC Bank",
+    "bankLogo": "HDFC",
+    "cards": [
+      {
+        "id": "hdfc-millennia",
+        "cardName": "HDFC Millennia",
+        "network": "Mastercard",
+        "isLtf": false,
+        "annualFee": 1000.0,
+        "feeWaiverSpend": 100000.0,
+        "baseRewardRate": 1.0,
+        "baseRewardCap": 1000.0,
+        "acceleratedRewardCap": 1000.0,
+        "cappingCycle": "CALENDAR_MONTH",
+        "billingCycleDay": 20,
+        "paymentDueDays": 20,
+        "creditLimit": 150000.0,
+        "merchantRewardRates": {
+          "Amazon": 5.0,
+          "Flipkart": 5.0,
+          "Swiggy": 5.0,
+          "Zomato": 5.0,
+          "Uber": 5.0,
+          "Myntra": 5.0,
+          "Tata CLiQ": 5.0,
+          "Cult.fit": 5.0,
+          "Sony LIV": 5.0,
+          "BookMyShow": 5.0
+        },
+        "description": "5% CashPoints on 10 partner merchants (capped at ₹1,000/calendar month, no split for excess spend) and 1% on other spends."
+      },
+      {
+        "id": "hdfc-swiggy",
+        "cardName": "Swiggy HDFC Bank",
+        "network": "Mastercard",
+        "isLtf": false,
+        "annualFee": 500.0,
+        "feeWaiverSpend": 200000.0,
+        "baseRewardRate": 1.0,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 1500.0,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 15,
+        "paymentDueDays": 20,
+        "creditLimit": 150000.0,
+        "merchantRewardRates": {
+          "Swiggy": 10.0,
+          "Instamart": 10.0,
+          "Dineout": 10.0,
+          "Amazon": 5.0,
+          "Flipkart": 5.0,
+          "Myntra": 5.0,
+          "Nykaa": 5.0,
+          "Ola": 5.0,
+          "Uber": 5.0,
+          "Pharmeasy": 5.0
+        },
+        "description": "10% cashback on Swiggy ecosystem (capped at ₹1,500/billing cycle), 5% on top online merchants (capped at ₹1,500/billing cycle), 1% other."
+      },
+      {
+        "id": "hdfc-tata-neu-infinity",
+        "cardName": "Tata Neu Infinity HDFC",
+        "network": "RuPay",
+        "isLtf": false,
+        "annualFee": 1499.0,
+        "feeWaiverSpend": 300000.0,
+        "baseRewardRate": 1.5,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 1500.0,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 10,
+        "paymentDueDays": 20,
+        "creditLimit": 200000.0,
+        "merchantRewardRates": {
+          "Tata Neu": 10.0,
+          "BigBasket": 10.0,
+          "1mg": 10.0,
+          "Croma": 10.0,
+          "Air India": 10.0,
+          "Taj Hotels": 10.0,
+          "UPI": 1.5
+        },
+        "description": "10% NeuCoins on Tata Neu ecosystem purchases (capped at 1,500 NeuCoins/statement) and 1.5% on UPI."
+      },
+      {
+        "id": "hdfc-tata-neu-plus",
+        "cardName": "Tata Neu Plus HDFC",
+        "network": "RuPay",
+        "isLtf": false,
+        "annualFee": 499.0,
+        "feeWaiverSpend": 100000.0,
+        "baseRewardRate": 1.0,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 500.0,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 10,
+        "paymentDueDays": 20,
+        "creditLimit": 100000.0,
+        "merchantRewardRates": {
+          "Tata Neu": 7.0,
+          "BigBasket": 7.0,
+          "1mg": 7.0,
+          "Croma": 7.0,
+          "UPI": 1.0
+        },
+        "description": "7% NeuCoins on Tata Neu apps (capped at 500 NeuCoins/statement) and 1% on UPI & domestic spends."
+      },
+      {
+        "id": "hdfc-regalia-gold",
+        "cardName": "HDFC Regalia Gold",
+        "network": "Visa",
+        "isLtf": false,
+        "annualFee": 2500.0,
+        "feeWaiverSpend": 400000.0,
+        "milestoneSpend": 150000.0,
+        "milestoneReward": "₹1,500 Flight/Hotel Voucher every quarter on ₹1.5L spend",
+        "baseRewardRate": 1.33,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 5000.0,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 16,
+        "paymentDueDays": 20,
+        "creditLimit": 350000.0,
+        "merchantRewardRates": {
+          "Marks & Spencer": 6.65,
+          "Nykaa": 6.65,
+          "Reliance Digital": 6.65,
+          "Myntra": 6.65,
+          "Flights": 5.0,
+          "Hotels": 5.0
+        },
+        "description": "4 Reward Points per ₹150 base spend (~1.33%) and 5X points on Marks & Spencer, Nykaa, Reliance Digital & Myntra."
+      },
+      {
+        "id": "hdfc-infinia",
+        "cardName": "HDFC Infinia Metal",
+        "network": "Visa",
+        "isLtf": false,
+        "annualFee": 12500.0,
+        "feeWaiverSpend": 1000000.0,
+        "baseRewardRate": 3.33,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 10000.0,
+        "cappingCycle": "CALENDAR_MONTH",
+        "billingCycleDay": 20,
+        "paymentDueDays": 20,
+        "creditLimit": 1000000.0,
+        "merchantRewardRates": {
+          "SmartBuy Flights": 16.65,
+          "SmartBuy Hotels": 33.3,
+          "Apple": 16.65,
+          "Instant Vouchers": 16.65
+        },
+        "description": "Super-premium card: 5 Reward Points per ₹150 (3.33%), 5X on SmartBuy flights (16.65%), 10X on hotels (33.3%). Cap of 10,000 bonus points/calendar month."
+      },
+      {
+        "id": "hdfc-diners-black",
+        "cardName": "HDFC Diners Club Black",
+        "network": "Diners",
+        "isLtf": false,
+        "annualFee": 10000.0,
+        "feeWaiverSpend": 800000.0,
+        "baseRewardRate": 3.33,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 7500.0,
+        "cappingCycle": "CALENDAR_MONTH",
+        "billingCycleDay": 18,
+        "paymentDueDays": 20,
+        "creditLimit": 800000.0,
+        "merchantRewardRates": {
+          "SmartBuy Flights": 16.65,
+          "SmartBuy Hotels": 33.3
+        },
+        "description": "5 Reward points per ₹150 (3.33%), up to 10X on SmartBuy. Cap of 7,500 bonus points/month."
+      },
+      {
+        "id": "hdfc-marriott",
+        "cardName": "Marriott Bonvoy HDFC",
+        "network": "Diners",
+        "isLtf": false,
+        "annualFee": 3000.0,
+        "feeWaiverSpend": 0.0,
+        "baseRewardRate": 2.0,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 15,
+        "paymentDueDays": 20,
+        "creditLimit": 250000.0,
+        "merchantRewardRates": {
+          "Marriott Hotels": 8.0,
+          "Dining": 4.0,
+          "Travel": 4.0
+        },
+        "description": "8 Marriott Bonvoy points per ₹150 on Marriott hotels, 4 points on dining/travel, 2 points other."
+      },
+      {
+        "id": "hdfc-indianoil",
+        "cardName": "IndianOil HDFC Bank",
+        "network": "RuPay",
+        "isLtf": false,
+        "annualFee": 500.0,
+        "feeWaiverSpend": 50000.0,
+        "baseRewardRate": 0.67,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 250.0,
+        "cappingCycle": "CALENDAR_MONTH",
+        "billingCycleDay": 12,
+        "paymentDueDays": 20,
+        "creditLimit": 80000.0,
+        "merchantRewardRates": {
+          "IndianOil Fuel": 5.0,
+          "Fuel": 5.0,
+          "Groceries": 5.0,
+          "Bill Payments": 5.0
+        },
+        "description": "5% Fuel Points on IndianOil fuel, groceries, and bill payments (up to 250 points/month for fuel)."
+      }
+    ]
+  },
+  {
+    "bank": "ICICI Bank",
+    "bankLogo": "ICICI",
+    "cards": [
+      {
+        "id": "amazon-pay-icici",
+        "cardName": "Amazon Pay ICICI",
+        "network": "Visa",
+        "isLtf": true,
+        "annualFee": 0.0,
+        "feeWaiverSpend": 0.0,
+        "baseRewardRate": 1.0,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 12,
+        "paymentDueDays": 20,
+        "creditLimit": 250000.0,
+        "merchantRewardRates": {
+          "Amazon": 5.0,
+          "Bill Payments": 2.0,
+          "Recharges": 2.0,
+          "Flights": 5.0,
+          "Dining": 1.0
+        },
+        "description": "Unlimited 5% cashback on Amazon for Prime members with NO capping. Unlimited 2% on 100+ partner merchants & bill payments, unlimited 1% on other spends. Lifetime Free (LTF)."
+      },
+      {
+        "id": "icici-coral",
+        "cardName": "ICICI Coral Credit Card",
+        "network": "RuPay",
+        "isLtf": false,
+        "annualFee": 500.0,
+        "feeWaiverSpend": 150000.0,
+        "baseRewardRate": 1.0,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 2000.0,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 18,
+        "paymentDueDays": 20,
+        "creditLimit": 150000.0,
+        "merchantRewardRates": {
+          "Dining": 2.0,
+          "Supermarket": 2.0,
+          "Groceries": 2.0,
+          "BookMyShow": 25.0
+        },
+        "description": "2 Reward Points per ₹100 on retail, 2X on dining and groceries. BookMyShow 25% discount up to ₹100 twice a month."
+      },
+      {
+        "id": "icici-rubyx",
+        "cardName": "ICICI Rubyx Credit Card",
+        "network": "Mastercard",
+        "isLtf": false,
+        "annualFee": 2000.0,
+        "feeWaiverSpend": 300000.0,
+        "baseRewardRate": 1.0,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 3000.0,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 18,
+        "paymentDueDays": 20,
+        "creditLimit": 300000.0,
+        "merchantRewardRates": {
+          "International": 2.0,
+          "Dining": 2.0,
+          "Travel": 2.0
+        },
+        "description": "Dual card variant (Visa & Amex), complimentary golf rounds, BookMyShow 25% discount up to ₹150."
+      },
+      {
+        "id": "icici-sapphiro",
+        "cardName": "ICICI Sapphiro Credit Card",
+        "network": "Mastercard",
+        "isLtf": false,
+        "annualFee": 3500.0,
+        "feeWaiverSpend": 600000.0,
+        "baseRewardRate": 1.0,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 5000.0,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 22,
+        "paymentDueDays": 20,
+        "creditLimit": 500000.0,
+        "merchantRewardRates": {
+          "International": 2.0,
+          "Dining": 2.0,
+          "Travel": 2.0
+        },
+        "description": "Premium dual card: BOGO BookMyShow up to ₹500, airport lounge access & golf privileges."
+      },
+      {
+        "id": "icici-makemytrip-signature",
+        "cardName": "MakeMyTrip ICICI Signature",
+        "network": "Visa",
+        "isLtf": false,
+        "annualFee": 2500.0,
+        "feeWaiverSpend": 0.0,
+        "baseRewardRate": 1.25,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 15,
+        "paymentDueDays": 20,
+        "creditLimit": 250000.0,
+        "merchantRewardRates": {
+          "MakeMyTrip Hotels": 6.0,
+          "MakeMyTrip Flights": 3.0,
+          "Flights": 3.0,
+          "Hotels": 6.0
+        },
+        "description": "Up to ₹4 My Cash per ₹200 on MakeMyTrip hotel bookings and ₹2 on flight bookings."
+      }
+    ]
+  },
+  {
+    "bank": "State Bank of India (SBI Card)",
+    "bankLogo": "SBI",
+    "cards": [
+      {
+        "id": "sbi-cashback",
+        "cardName": "SBI Cashback Card",
+        "network": "Visa",
+        "isLtf": false,
+        "annualFee": 999.0,
+        "feeWaiverSpend": 200000.0,
+        "baseRewardRate": 1.0,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 5000.0,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 15,
+        "paymentDueDays": 20,
+        "creditLimit": 200000.0,
+        "merchantRewardRates": {
+          "Online Shopping": 5.0,
+          "Amazon": 5.0,
+          "Flipkart": 5.0,
+          "Myntra": 5.0,
+          "Swiggy": 5.0,
+          "Zomato": 5.0,
+          "Uber": 5.0,
+          "Blinkit": 5.0,
+          "Zepto": 5.0,
+          "MakeMyTrip": 5.0
+        },
+        "description": "5% cashback on all eligible online spends across almost all merchants capped at ₹5,000 per statement cycle (no split for excess spend). 1% unlimited cashback on offline spends."
+      },
+      {
+        "id": "sbi-simplyclick",
+        "cardName": "SimplyCLICK SBI Card",
+        "network": "Visa",
+        "isLtf": false,
+        "annualFee": 499.0,
+        "feeWaiverSpend": 100000.0,
+        "baseRewardRate": 1.0,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 2500.0,
+        "cappingCycle": "CALENDAR_MONTH",
+        "billingCycleDay": 22,
+        "paymentDueDays": 20,
+        "creditLimit": 100000.0,
+        "merchantRewardRates": {
+          "Amazon": 2.5,
+          "BookMyShow": 2.5,
+          "Cleartrip": 2.5,
+          "Lenskart": 2.5,
+          "Netmeds": 2.5
+        },
+        "description": "10X Reward points (~2.5% return) on exclusive online partners like Amazon, BookMyShow, Cleartrip. 5X on all other online spends."
+      },
+      {
+        "id": "sbi-simplysave",
+        "cardName": "SimplySAVE SBI Card",
+        "network": "RuPay",
+        "isLtf": false,
+        "annualFee": 499.0,
+        "feeWaiverSpend": 100000.0,
+        "baseRewardRate": 0.25,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 2500.0,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 18,
+        "paymentDueDays": 20,
+        "creditLimit": 90000.0,
+        "merchantRewardRates": {
+          "Dining": 2.5,
+          "Movies": 2.5,
+          "Grocery": 2.5,
+          "Supermarket": 2.5
+        },
+        "description": "10 Reward Points per ₹150 on dining, groceries, and movies. UPI enabled on RuPay."
+      },
+      {
+        "id": "sbi-bpcl-octane",
+        "cardName": "BPCL SBI Card Octane",
+        "network": "Visa",
+        "isLtf": false,
+        "annualFee": 1499.0,
+        "feeWaiverSpend": 200000.0,
+        "baseRewardRate": 0.25,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 1500.0,
+        "cappingCycle": "BILLING_CYCLE",
+        "billingCycleDay": 20,
+        "paymentDueDays": 20,
+        "creditLimit": 120000.0,
+        "merchantRewardRates": {
+          "BPCL Fuel": 7.25,
+          "Fuel": 7.25,
+          "Dining": 2.5,
+          "Groceries": 2.5
+        },
+        "description": "7.25% value back on BPCL fuel (25 Reward Points per ₹100 + 1% surcharge waiver, max 2500 pts/cycle)."
+      },
+      {
+        "id": "sbi-prime",
+        "cardName": "SBI Card PRIME",
+        "network": "Visa",
+        "isLtf": false,
+        "annualFee": 2999.0,
+        "feeWaiverSpend": 300000.0,
+        "baseRewardRate": 0.5,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 3000.0,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 25,
+        "paymentDueDays": 20,
+        "creditLimit": 300000.0,
+        "merchantRewardRates": {
+          "Dining": 2.5,
+          "Groceries": 2.5,
+          "Movies": 2.5,
+          "BigBasket": 2.5
+        },
+        "description": "15 Reward Points per ₹100 on dining, groceries, and movies. Club Vistara & Trident privileges."
+      }
+    ]
+  },
+  {
+    "bank": "Axis Bank",
+    "bankLogo": "Axis",
+    "cards": [
+      {
+        "id": "axis-ace",
+        "cardName": "Axis Ace",
+        "network": "Visa",
+        "isLtf": false,
+        "annualFee": 499.0,
+        "feeWaiverSpend": 200000.0,
+        "baseRewardRate": 1.5,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 500.0,
+        "cappingCycle": "CALENDAR_MONTH",
+        "billingCycleDay": 18,
+        "paymentDueDays": 20,
+        "creditLimit": 180000.0,
+        "merchantRewardRates": {
+          "Google Pay Bills": 5.0,
+          "Electricity": 5.0,
+          "DTH": 5.0,
+          "Mobile Recharge": 5.0,
+          "Swiggy": 4.0,
+          "Zomato": 4.0,
+          "Ola": 4.0
+        },
+        "description": "5% cashback on Google Pay bills (capped at ₹500/calendar month, no split), 4% on Swiggy/Zomato/Ola (capped at ₹500/calendar month), and unlimited 1.5% base."
+      },
+      {
+        "id": "flipkart-axis",
+        "cardName": "Flipkart Axis Bank",
+        "network": "Visa",
+        "isLtf": false,
+        "annualFee": 500.0,
+        "feeWaiverSpend": 350000.0,
+        "baseRewardRate": 1.5,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 500.0,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 25,
+        "paymentDueDays": 20,
+        "creditLimit": 150000.0,
+        "merchantRewardRates": {
+          "Flipkart": 5.0,
+          "Myntra": 5.0,
+          "Swiggy": 4.0,
+          "Uber": 4.0,
+          "PVR": 4.0,
+          "Cleartrip": 4.0
+        },
+        "description": "5% unlimited cashback on Flipkart & Myntra, 4% cashback on preferred partners (capped at ₹500/billing cycle), and 1.5% unlimited base."
+      },
+      {
+        "id": "airtel-axis",
+        "cardName": "Airtel Axis Bank",
+        "network": "Mastercard",
+        "isLtf": false,
+        "annualFee": 500.0,
+        "feeWaiverSpend": 300000.0,
+        "baseRewardRate": 1.0,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 500.0,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 14,
+        "paymentDueDays": 20,
+        "creditLimit": 120000.0,
+        "merchantRewardRates": {
+          "Airtel": 25.0,
+          "BigBasket": 10.0,
+          "Swiggy": 10.0,
+          "Zomato": 10.0,
+          "Electricity": 10.0,
+          "Gas": 10.0,
+          "Water": 10.0
+        },
+        "description": "25% on Airtel mobile/DTH/broadband (capped at ₹300/cycle), 10% on BigBasket, Swiggy, Zomato (capped at ₹500/cycle), 10% on utility bills on Airtel Thanks (capped at ₹300/cycle)."
+      },
+      {
+        "id": "axis-atlas",
+        "cardName": "Axis Bank Atlas",
+        "network": "Visa",
+        "isLtf": false,
+        "annualFee": 5000.0,
+        "feeWaiverSpend": 0.0,
+        "milestoneSpend": 300000.0,
+        "milestoneReward": "2,500 Bonus EDGE Miles on ₹3L spend; up to 10,000 miles on ₹15L spend",
+        "baseRewardRate": 2.0,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 20,
+        "paymentDueDays": 20,
+        "creditLimit": 450000.0,
+        "merchantRewardRates": {
+          "Airlines": 5.0,
+          "Flights": 5.0,
+          "Hotels": 5.0,
+          "Travel": 5.0
+        },
+        "description": "Top-tier travel card: 5 EDGE Miles per ₹100 on airlines and hotel bookings (~5% or 1:2 transfer to airline miles), 2 EDGE Miles on general spends."
+      },
+      {
+        "id": "axis-neo",
+        "cardName": "Axis Bank Neo",
+        "network": "Visa",
+        "isLtf": false,
+        "annualFee": 250.0,
+        "feeWaiverSpend": 100000.0,
+        "baseRewardRate": 0.5,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 150.0,
+        "cappingCycle": "CALENDAR_MONTH",
+        "billingCycleDay": 15,
+        "paymentDueDays": 20,
+        "creditLimit": 80000.0,
+        "merchantRewardRates": {
+          "Zomato": 40.0,
+          "BookMyShow": 10.0,
+          "Amazon Pay Bills": 5.0
+        },
+        "description": "40% off on Zomato up to ₹120 twice a month, 10% off on BookMyShow up to ₹100/month."
+      }
+    ]
+  },
+  {
+    "bank": "Kotak Mahindra Bank",
+    "bankLogo": "Kotak",
+    "cards": [
+      {
+        "id": "kotak-myntra",
+        "cardName": "Myntra Kotak Credit Card",
+        "network": "Mastercard",
+        "isLtf": false,
+        "annualFee": 500.0,
+        "feeWaiverSpend": 200000.0,
+        "baseRewardRate": 1.25,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 750.0,
+        "cappingCycle": "CALENDAR_MONTH",
+        "billingCycleDay": 18,
+        "paymentDueDays": 20,
+        "creditLimit": 150000.0,
+        "merchantRewardRates": {
+          "Myntra": 7.5,
+          "Swiggy": 5.0,
+          "Zomato": 5.0,
+          "BigBasket": 5.0,
+          "PVR": 5.0,
+          "Cleartrip": 5.0
+        },
+        "description": "7.5% instant discount on Myntra (capped at ₹750/transaction), 5% cashback on preferred merchants (capped at ₹1,000/month), 1.25% base."
+      },
+      {
+        "id": "kotak-league",
+        "cardName": "Kotak League Platinum",
+        "network": "RuPay",
+        "isLtf": true,
+        "annualFee": 0.0,
+        "feeWaiverSpend": 0.0,
+        "baseRewardRate": 1.0,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 1500.0,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 12,
+        "paymentDueDays": 20,
+        "creditLimit": 120000.0,
+        "merchantRewardRates": {
+          "Movies": 4.0,
+          "Dining": 4.0,
+          "Travel": 4.0
+        },
+        "description": "8X Reward Points per ₹150 on special categories (movies, dining, travel), 4X on other spends. RuPay UPI enabled."
+      },
+      {
+        "id": "kotak-white",
+        "cardName": "Kotak White Credit Card",
+        "network": "Visa",
+        "isLtf": false,
+        "annualFee": 3000.0,
+        "feeWaiverSpend": 500000.0,
+        "milestoneSpend": 200000.0,
+        "milestoneReward": "White Pass worth ₹1,500 on ₹2L spend; up to ₹27,000 vouchers on ₹12L spend",
+        "baseRewardRate": 1.5,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 20,
+        "paymentDueDays": 20,
+        "creditLimit": 350000.0,
+        "merchantRewardRates": {},
+        "description": "Premium milestone card: White Pass vouchers for top luxury and lifestyle brands."
+      }
+    ]
+  },
+  {
+    "bank": "Bank of Baroda (BOB Financial)",
+    "bankLogo": "BOB",
+    "cards": [
+      {
+        "id": "bob-eterna",
+        "cardName": "BOB Eterna Credit Card",
+        "network": "Visa",
+        "isLtf": false,
+        "annualFee": 2499.0,
+        "feeWaiverSpend": 300000.0,
+        "baseRewardRate": 0.75,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 1500.0,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 15,
+        "paymentDueDays": 20,
+        "creditLimit": 250000.0,
+        "merchantRewardRates": {
+          "Travel": 3.75,
+          "Dining": 3.75,
+          "Online Shopping": 3.75,
+          "Amazon": 3.75,
+          "Flipkart": 3.75
+        },
+        "description": "15 Reward points per ₹100 on travel, dining, and online shopping (max 5,000 bonus points per cycle)."
+      },
+      {
+        "id": "bob-irctc",
+        "cardName": "BOB IRCTC RuPay Card",
+        "network": "RuPay",
+        "isLtf": false,
+        "annualFee": 500.0,
+        "feeWaiverSpend": 100000.0,
+        "baseRewardRate": 0.5,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 1000.0,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 12,
+        "paymentDueDays": 20,
+        "creditLimit": 80000.0,
+        "merchantRewardRates": {
+          "IRCTC": 10.0,
+          "Train Booking": 10.0
+        },
+        "description": "Up to 40 Reward points per ₹100 spent on train ticket bookings on IRCTC app/website."
+      },
+      {
+        "id": "bob-premier",
+        "cardName": "BOB Premier Credit Card",
+        "network": "RuPay",
+        "isLtf": false,
+        "annualFee": 1000.0,
+        "feeWaiverSpend": 120000.0,
+        "baseRewardRate": 0.5,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 1000.0,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 18,
+        "paymentDueDays": 20,
+        "creditLimit": 150000.0,
+        "merchantRewardRates": {
+          "Dining": 2.5,
+          "Travel": 2.5,
+          "UPI": 0.5
+        },
+        "description": "5X Reward Points on travel and dining, RuPay UPI enabled."
+      }
+    ]
+  },
+  {
+    "bank": "IDFC FIRST Bank",
+    "bankLogo": "IDFC",
+    "cards": [
+      {
+        "id": "idfc-first-millennia",
+        "cardName": "IDFC FIRST Millennia",
+        "network": "Visa",
+        "isLtf": true,
+        "annualFee": 0.0,
+        "feeWaiverSpend": 0.0,
+        "baseRewardRate": 0.75,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 15,
+        "paymentDueDays": 20,
+        "creditLimit": 150000.0,
+        "merchantRewardRates": {
+          "Online Shopping": 1.5,
+          "Spends over 20k": 2.5
+        },
+        "description": "Lifetime Free (LTF). 3X on offline (0.75%), 6X on online (1.5%), 10X on monthly spends exceeding ₹20,000 (2.5%). Never expiring reward points."
+      },
+      {
+        "id": "idfc-first-select",
+        "cardName": "IDFC FIRST Select",
+        "network": "Visa",
+        "isLtf": true,
+        "annualFee": 0.0,
+        "feeWaiverSpend": 0.0,
+        "baseRewardRate": 0.75,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 15,
+        "paymentDueDays": 20,
+        "creditLimit": 300000.0,
+        "merchantRewardRates": {
+          "Online Shopping": 1.5,
+          "Spends over 25k": 2.5,
+          "BookMyShow": 50.0
+        },
+        "description": "Lifetime Free. BOGO on BookMyShow up to ₹250 twice a month, domestic airport & railway lounge access."
+      },
+      {
+        "id": "idfc-club-vistara",
+        "cardName": "IDFC FIRST Club Vistara",
+        "network": "Mastercard",
+        "isLtf": false,
+        "annualFee": 4999.0,
+        "feeWaiverSpend": 0.0,
+        "baseRewardRate": 1.5,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 18,
+        "paymentDueDays": 20,
+        "creditLimit": 400000.0,
+        "merchantRewardRates": {
+          "Flights": 3.0,
+          "Vistara": 3.0,
+          "Dining": 2.0
+        },
+        "description": "Up to 6 CV Points per ₹200 on dining/travel, complimentary Premium Economy ticket vouchers on joining and milestones."
+      }
+    ]
+  },
+  {
+    "bank": "IndusInd Bank",
+    "bankLogo": "IndusInd",
+    "cards": [
+      {
+        "id": "indusind-legend",
+        "cardName": "IndusInd Legend Credit Card",
+        "network": "Visa",
+        "isLtf": true,
+        "annualFee": 0.0,
+        "feeWaiverSpend": 0.0,
+        "baseRewardRate": 0.75,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 20,
+        "paymentDueDays": 20,
+        "creditLimit": 250000.0,
+        "merchantRewardRates": {
+          "Weekend Spends": 1.5,
+          "BookMyShow": 50.0
+        },
+        "description": "Lifetime Free. 1 Reward point on weekdays, 2 Reward points on weekends (1 pt = ₹0.75 cash value). BOGO on BookMyShow."
+      },
+      {
+        "id": "indusind-tiger",
+        "cardName": "IndusInd Tiger Credit Card",
+        "network": "Mastercard",
+        "isLtf": false,
+        "annualFee": 500.0,
+        "feeWaiverSpend": 150000.0,
+        "baseRewardRate": 1.2,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 15,
+        "paymentDueDays": 20,
+        "creditLimit": 200000.0,
+        "merchantRewardRates": {
+          "Dining": 2.4,
+          "Food": 2.4,
+          "Entertainment": 2.4
+        },
+        "description": "2X accelerator on dining and entertainment, 1.2% base reward rate."
+      },
+      {
+        "id": "indusind-eazydiner",
+        "cardName": "IndusInd EazyDiner Platinum",
+        "network": "Visa",
+        "isLtf": false,
+        "annualFee": 1999.0,
+        "feeWaiverSpend": 0.0,
+        "baseRewardRate": 1.0,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 12,
+        "paymentDueDays": 20,
+        "creditLimit": 200000.0,
+        "merchantRewardRates": {
+          "Dining": 10.0,
+          "EazyDiner": 25.0
+        },
+        "description": "Up to 25% extra discount + 10 EazyPoints per ₹100 on dining and takeaway via EazyDiner."
+      }
+    ]
+  },
+  {
+    "bank": "RBL Bank",
+    "bankLogo": "RBL",
+    "cards": [
+      {
+        "id": "rbl-shoprite",
+        "cardName": "RBL ShopRite Credit Card",
+        "network": "Mastercard",
+        "isLtf": false,
+        "annualFee": 500.0,
+        "feeWaiverSpend": 100000.0,
+        "baseRewardRate": 0.25,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 500.0,
+        "cappingCycle": "CALENDAR_MONTH",
+        "billingCycleDay": 18,
+        "paymentDueDays": 20,
+        "creditLimit": 90000.0,
+        "merchantRewardRates": {
+          "Groceries": 5.0,
+          "Supermarket": 5.0,
+          "BookMyShow": 10.0
+        },
+        "description": "20 Reward points per ₹100 on grocery shopping (capped at 1,000 points/month), 10% off BookMyShow."
+      },
+      {
+        "id": "rbl-baja-finserv-supercard",
+        "cardName": "Bajaj Finserv RBL SuperCard",
+        "network": "Mastercard",
+        "isLtf": false,
+        "annualFee": 499.0,
+        "feeWaiverSpend": 100000.0,
+        "baseRewardRate": 0.5,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 1000.0,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 15,
+        "paymentDueDays": 20,
+        "creditLimit": 120000.0,
+        "merchantRewardRates": {
+          "Online Shopping": 1.0,
+          "Fuel": 1.0
+        },
+        "description": "4-in-1 card: Credit card, Cash card, Loan card, and EMI card in one."
+      },
+      {
+        "id": "rbl-play",
+        "cardName": "RBL Bank Play Credit Card",
+        "network": "Mastercard",
+        "isLtf": false,
+        "annualFee": 500.0,
+        "feeWaiverSpend": 150000.0,
+        "baseRewardRate": 0.25,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 500.0,
+        "cappingCycle": "CALENDAR_MONTH",
+        "billingCycleDay": 20,
+        "paymentDueDays": 20,
+        "creditLimit": 80000.0,
+        "merchantRewardRates": {
+          "BookMyShow": 25.0,
+          "Movies": 25.0
+        },
+        "description": "Co-branded BookMyShow card: 2 free movie tickets (up to ₹500/month) on ₹5,000 monthly spend."
+      }
+    ]
+  },
+  {
+    "bank": "Punjab National Bank (PNB)",
+    "bankLogo": "PNB",
+    "cards": [
+      {
+        "id": "pnb-rupay-platinum",
+        "cardName": "PNB RuPay Platinum",
+        "network": "RuPay",
+        "isLtf": true,
+        "annualFee": 0.0,
+        "feeWaiverSpend": 0.0,
+        "baseRewardRate": 0.5,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 15,
+        "paymentDueDays": 20,
+        "creditLimit": 100000.0,
+        "merchantRewardRates": {
+          "UPI": 0.5,
+          "Dining": 1.0,
+          "Utilities": 1.0
+        },
+        "description": "Zero annual fee RuPay card with seamless UPI QR code linking, insurance coverage, and reward points."
+      },
+      {
+        "id": "pnb-rupay-select",
+        "cardName": "PNB RuPay Select",
+        "network": "RuPay",
+        "isLtf": false,
+        "annualFee": 500.0,
+        "feeWaiverSpend": 100000.0,
+        "baseRewardRate": 0.75,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 15,
+        "paymentDueDays": 20,
+        "creditLimit": 200000.0,
+        "merchantRewardRates": {
+          "Dining": 1.5,
+          "Travel": 1.5
+        },
+        "description": "Complimentary domestic & international airport lounge visits, health checkup vouchers, and golf privileges."
+      }
+    ]
+  },
+  {
+    "bank": "Union Bank of India",
+    "bankLogo": "UnionBank",
+    "cards": [
+      {
+        "id": "union-rupay-select",
+        "cardName": "Union Bank RuPay Select",
+        "network": "RuPay",
+        "isLtf": false,
+        "annualFee": 499.0,
+        "feeWaiverSpend": 100000.0,
+        "baseRewardRate": 0.5,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 15,
+        "paymentDueDays": 20,
+        "creditLimit": 150000.0,
+        "merchantRewardRates": {
+          "UPI": 0.5,
+          "Dining": 1.0
+        },
+        "description": "Complimentary lounge access, Spa sessions, OTT subscriptions on milestones, and RuPay UPI support."
+      }
+    ]
+  },
+  {
+    "bank": "Canara Bank",
+    "bankLogo": "Canara",
+    "cards": [
+      {
+        "id": "canara-rupay-select",
+        "cardName": "Canara RuPay Select",
+        "network": "RuPay",
+        "isLtf": false,
+        "annualFee": 400.0,
+        "feeWaiverSpend": 100000.0,
+        "baseRewardRate": 0.5,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 15,
+        "paymentDueDays": 20,
+        "creditLimit": 150000.0,
+        "merchantRewardRates": {
+          "UPI": 0.5,
+          "Fuel": 1.0
+        },
+        "description": "Affordable PSU credit card with RuPay UPI support, low finance charges, and travel insurance."
+      }
+    ]
+  },
+  {
+    "bank": "Federal Bank",
+    "bankLogo": "Federal",
+    "cards": [
+      {
+        "id": "federal-celesta",
+        "cardName": "Federal Bank Celesta",
+        "network": "Visa",
+        "isLtf": true,
+        "annualFee": 0.0,
+        "feeWaiverSpend": 0.0,
+        "baseRewardRate": 1.0,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 20,
+        "paymentDueDays": 20,
+        "creditLimit": 300000.0,
+        "merchantRewardRates": {
+          "Dining": 3.0,
+          "International": 3.0,
+          "Travel": 3.0
+        },
+        "description": "Lifetime Free super-premium card. 3X rewards on dining and international spends, BOGO on BookMyShow."
+      },
+      {
+        "id": "federal-scapia",
+        "cardName": "Scapia Federal Credit Card",
+        "network": "Visa",
+        "isLtf": true,
+        "annualFee": 0.0,
+        "feeWaiverSpend": 0.0,
+        "baseRewardRate": 2.0,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 16,
+        "paymentDueDays": 20,
+        "creditLimit": 200000.0,
+        "merchantRewardRates": {
+          "Travel": 4.0,
+          "Flights": 4.0,
+          "Hotels": 4.0
+        },
+        "description": "Zero Forex markup on all international spends, 20% Scapia coins on travel bookings, Lifetime Free."
+      },
+      {
+        "id": "federal-imperio",
+        "cardName": "Federal Bank Imperio",
+        "network": "Mastercard",
+        "isLtf": true,
+        "annualFee": 0.0,
+        "feeWaiverSpend": 0.0,
+        "baseRewardRate": 0.75,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 18,
+        "paymentDueDays": 20,
+        "creditLimit": 150000.0,
+        "merchantRewardRates": {
+          "Groceries": 2.25,
+          "Health": 2.25
+        },
+        "description": "Lifetime Free. 3X rewards on groceries and medical expenses, complimentary airport lounge access."
+      }
+    ]
+  },
+  {
+    "bank": "Yes Bank",
+    "bankLogo": "YesBank",
+    "cards": [
+      {
+        "id": "yes-marquee",
+        "cardName": "YES Marquee Credit Card",
+        "network": "Mastercard",
+        "isLtf": false,
+        "annualFee": 9999.0,
+        "feeWaiverSpend": 1000000.0,
+        "baseRewardRate": 2.25,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 20,
+        "paymentDueDays": 20,
+        "creditLimit": 750000.0,
+        "merchantRewardRates": {
+          "Online Shopping": 4.5,
+          "Amazon": 4.5,
+          "Flipkart": 4.5
+        },
+        "description": "Premium lifestyle card: 36 Reward Points per ₹200 on online spends (4.5%), 18 Reward Points on offline (2.25%)."
+      },
+      {
+        "id": "yes-reserv",
+        "cardName": "YES Reserv Credit Card",
+        "network": "Visa",
+        "isLtf": false,
+        "annualFee": 1999.0,
+        "feeWaiverSpend": 300000.0,
+        "baseRewardRate": 1.5,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 15,
+        "paymentDueDays": 20,
+        "creditLimit": 300000.0,
+        "merchantRewardRates": {
+          "Online Shopping": 3.0,
+          "Travel": 3.0
+        },
+        "description": "24 Reward Points per ₹200 on online shopping (3%), 12 Points on offline. Lounge access and movie discounts."
+      }
+    ]
+  },
+  {
+    "bank": "AU Small Finance Bank",
+    "bankLogo": "AUBank",
+    "cards": [
+      {
+        "id": "au-lit",
+        "cardName": "AU LIT Credit Card",
+        "network": "Visa",
+        "isLtf": true,
+        "annualFee": 0.0,
+        "feeWaiverSpend": 0.0,
+        "baseRewardRate": 1.0,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 500.0,
+        "cappingCycle": "CALENDAR_MONTH",
+        "billingCycleDay": 15,
+        "paymentDueDays": 20,
+        "creditLimit": 150000.0,
+        "merchantRewardRates": {
+          "Amazon": 5.0,
+          "Flipkart": 5.0,
+          "Dining": 5.0,
+          "Travel": 5.0
+        },
+        "description": "India's first customizable credit card: Lifetime Free base, activate 5% cashback or 10X reward features on-demand."
+      },
+      {
+        "id": "au-zenith-plus",
+        "cardName": "AU Zenith+ Credit Card",
+        "network": "Visa",
+        "isLtf": false,
+        "annualFee": 4999.0,
+        "feeWaiverSpend": 800000.0,
+        "baseRewardRate": 1.25,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 22,
+        "paymentDueDays": 20,
+        "creditLimit": 400000.0,
+        "merchantRewardRates": {
+          "Dining": 2.5,
+          "Travel": 2.5,
+          "International": 2.5
+        },
+        "description": "Super-premium metal card: Low 0.99% forex markup, luxury dining & airport meet-and-greet services."
+      }
+    ]
+  },
+  {
+    "bank": "HSBC India",
+    "bankLogo": "HSBC",
+    "cards": [
+      {
+        "id": "hsbc-live-plus",
+        "cardName": "HSBC Live+ (Cashback)",
+        "network": "Visa",
+        "isLtf": false,
+        "annualFee": 999.0,
+        "feeWaiverSpend": 200000.0,
+        "baseRewardRate": 1.5,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 1000.0,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 5,
+        "paymentDueDays": 20,
+        "creditLimit": 250000.0,
+        "merchantRewardRates": {
+          "Dining": 10.0,
+          "Food Delivery": 10.0,
+          "Swiggy": 10.0,
+          "Zomato": 10.0,
+          "Groceries": 10.0,
+          "Supermarket": 10.0,
+          "Blinkit": 10.0,
+          "Zepto": 10.0,
+          "Instamart": 10.0
+        },
+        "description": "10% accelerated cashback on dining, food delivery, and groceries (capped at ₹1,000 per billing cycle, no split on excess spend). Unlimited 1.5% cashback on other spends."
+      },
+      {
+        "id": "hsbc-visa-platinum",
+        "cardName": "HSBC Visa Platinum",
+        "network": "Visa",
+        "isLtf": true,
+        "annualFee": 0.0,
+        "feeWaiverSpend": 0.0,
+        "baseRewardRate": 0.5,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 10,
+        "paymentDueDays": 20,
+        "creditLimit": 150000.0,
+        "merchantRewardRates": {
+          "BookMyShow": 50.0
+        },
+        "description": "Lifetime Free card with BOGO on BookMyShow up to ₹250 on Saturdays, reward points on general retail."
+      }
+    ]
+  },
+  {
+    "bank": "Standard Chartered Bank",
+    "bankLogo": "StanC",
+    "cards": [
+      {
+        "id": "sc-smart",
+        "cardName": "Standard Chartered Smart",
+        "network": "Visa",
+        "isLtf": false,
+        "annualFee": 499.0,
+        "feeWaiverSpend": 120000.0,
+        "baseRewardRate": 1.0,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 1000.0,
+        "cappingCycle": "CALENDAR_MONTH",
+        "billingCycleDay": 15,
+        "paymentDueDays": 20,
+        "creditLimit": 150000.0,
+        "merchantRewardRates": {
+          "Online Shopping": 2.0,
+          "Amazon": 2.0,
+          "Flipkart": 2.0
+        },
+        "description": "2% cashback on all online spends (capped at ₹1,000/month), 1% on all other spends."
+      },
+      {
+        "id": "sc-ultimate",
+        "cardName": "Standard Chartered Ultimate",
+        "network": "Visa",
+        "isLtf": false,
+        "annualFee": 5000.0,
+        "feeWaiverSpend": 0.0,
+        "baseRewardRate": 3.33,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 20,
+        "paymentDueDays": 20,
+        "creditLimit": 500000.0,
+        "merchantRewardRates": {
+          "Duty Free": 5.0
+        },
+        "description": "5 Reward Points per ₹150 (3.33% reward rate flat across all retail spends, no category exclusions)."
+      }
+    ]
+  },
+  {
+    "bank": "American Express (Amex)",
+    "bankLogo": "Amex",
+    "cards": [
+      {
+        "id": "amex-plat-travel",
+        "cardName": "Amex Platinum Travel",
+        "network": "Amex",
+        "isLtf": false,
+        "annualFee": 5000.0,
+        "feeWaiverSpend": 0.0,
+        "milestoneSpend": 400000.0,
+        "milestoneReward": "₹10,000 Taj Voucher + 40,000 Membership Rewards (worth ~₹24,000+ in flights/hotels)",
+        "baseRewardRate": 2.0,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "STATEMENT_CYCLE",
+        "billingCycleDay": 25,
+        "paymentDueDays": 20,
+        "creditLimit": 400000.0,
+        "merchantRewardRates": {
+          "Travel": 3.0,
+          "Flights": 3.0,
+          "Hotels": 3.0
+        },
+        "description": "Best milestone card: 15,000 points on ₹1.9L annual spend + 25,000 points and ₹10,000 Taj voucher on hitting ₹4L annual spend."
+      },
+      {
+        "id": "amex-smartearn",
+        "cardName": "Amex SmartEarn",
+        "network": "Amex",
+        "isLtf": false,
+        "annualFee": 495.0,
+        "feeWaiverSpend": 40000.0,
+        "baseRewardRate": 1.0,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": 500.0,
+        "cappingCycle": "CALENDAR_MONTH",
+        "billingCycleDay": 15,
+        "paymentDueDays": 20,
+        "creditLimit": 100000.0,
+        "merchantRewardRates": {
+          "Flipkart": 5.0,
+          "Uber": 5.0,
+          "Amazon": 2.5,
+          "Swiggy": 2.5,
+          "BookMyShow": 2.5
+        },
+        "description": "10X Membership Rewards points on Flipkart & Uber (capped at 500 points/month), 5X on Amazon, Swiggy, BookMyShow (capped at 250 points/month)."
+      },
+      {
+        "id": "amex-membership-rewards",
+        "cardName": "Amex Membership Rewards (MRCC)",
+        "network": "Amex",
+        "isLtf": false,
+        "annualFee": 1500.0,
+        "feeWaiverSpend": 150000.0,
+        "milestoneSpend": 20000.0,
+        "milestoneReward": "1,000 bonus points on 4 txns of ₹1,500+ and 1,000 points on ₹20k monthly spend",
+        "baseRewardRate": 1.0,
+        "baseRewardCap": null,
+        "acceleratedRewardCap": null,
+        "cappingCycle": "CALENDAR_MONTH",
+        "billingCycleDay": 20,
+        "paymentDueDays": 20,
+        "creditLimit": 200000.0,
+        "merchantRewardRates": {},
+        "description": "1,000 bonus MR points every month on 4 transactions of ₹1,500+ plus 1,000 bonus points on ₹20,000 monthly spend."
+      }
+    ]
+  }
+]
