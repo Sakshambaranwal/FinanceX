@@ -7,9 +7,9 @@ services:
     container_name: financeapp-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: saksham
-      POSTGRES_USER: saksham
-      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: ${DB_NAME:-finance_db}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -27,9 +27,9 @@ services:
     env_file:
       - .env
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/saksham
-      SPRING_DATASOURCE_USERNAME: saksham
-      SPRING_DATASOURCE_PASSWORD: password123
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
     ports:
       - "80:80"
 

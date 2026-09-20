@@ -49,6 +49,22 @@ public class PublicController {
         }
     }
 
+    @PostMapping("/auth/google")
+    public ResponseEntity<Object> googleAuth(@RequestBody java.util.Map<String, String> payload) {
+        String idToken = payload != null ? payload.get("idToken") : null;
+        if (idToken == null || idToken.isBlank()) {
+            return new ResponseEntity<>("Missing Google ID token", HttpStatus.BAD_REQUEST);
+        }
+        try {
+            String jwt = userService.loginWithGoogle(idToken);
+            return ResponseEntity.ok(jwt);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Google authentication failed: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping("/ping")
     public ResponseEntity<String> ping() {
         return new ResponseEntity<>("pong", HttpStatus.OK);

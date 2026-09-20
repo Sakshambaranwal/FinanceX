@@ -17,6 +17,13 @@ echo "========================================================"
 echo " Starting FinanceApp Services..."
 echo "========================================================"
 
+USER_PORT="${USER_SERVICE_PORT:-8081}"
+EXPENSE_PORT="${EXPENSE_SERVICE_PORT:-8082}"
+P2P_PORT="${P2P_SERVICE_PORT:-8084}"
+CC_PORT="${CREDITCARD_SERVICE_PORT:-8086}"
+GATEWAY_P="${GATEWAY_PORT:-8080}"
+FRONTEND_P="${FRONTEND_PORT:-5173}"
+
 # Helper function to start a service if not already running
 start_service() {
     local name=$1
@@ -24,7 +31,7 @@ start_service() {
     local port=$3
     local log="$LOG_DIR/$name.log"
 
-    if lsof -i :$port > /dev/null 2>&1; then
+    if lsof -iTCP:$port -sTCP:LISTEN > /dev/null 2>&1; then
         echo " [ALREADY RUNNING] $name on port $port"
     else
         echo " [STARTING] $name on port $port..."
@@ -32,23 +39,22 @@ start_service() {
     fi
 }
 
-start_service "user-service" "user-service" 8081
-start_service "expense-service" "expense-service" 8082
-start_service "p2p-service" "p2p-service" 8084
-start_service "creditcard-service" "creditcard-service" 8086
-start_service "financeX-core" "financeX-core" 8080
+start_service "user-service" "user-service" "$USER_PORT"
+start_service "expense-service" "expense-service" "$EXPENSE_PORT"
+start_service "p2p-service" "p2p-service" "$P2P_PORT"
+start_service "creditcard-service" "creditcard-service" "$CC_PORT"
+start_service "financeX-core" "financeX-core" "$GATEWAY_P"
 
 # Start Frontend
-if lsof -i :5173 > /dev/null 2>&1; then
-    echo " [ALREADY RUNNING] financeX-ui on port 5173"
+if lsof -iTCP:$FRONTEND_P -sTCP:LISTEN > /dev/null 2>&1; then
+    echo " [ALREADY RUNNING] financeX-ui on port $FRONTEND_P"
 else
-    echo " [STARTING] financeX-ui on port 5173..."
+    echo " [STARTING] financeX-ui on port $FRONTEND_P..."
     (cd "$DIR/financeX-ui" && npm run dev > "$LOG_DIR/financeX-ui.log" 2>&1) &
 fi
 
 echo "========================================================"
 echo " All services launched! Check status with: ./status.sh"
 echo " Stop all services anytime with:         ./stop-all.sh"
-echo " Access frontend at:                     http://localhost:5173"
+echo " Access frontend at:                     http://localhost:$FRONTEND_P"
 echo "========================================================"
-

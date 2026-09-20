@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="fxGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#1D4ED8" />
+    </linearGradient>
+    <linearGradient id="fxGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4338CA" />
+    </linearGradient>
+    <linearGradient id="fxAccent" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#60A5FA" />
+      <stop offset="100%" stop-color="#818CF8" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#3B82F6" flood-opacity="0.3" />
+    </filter>
+  </defs>
+
+  <!-- Background rounded squircle with subtle dark border -->
+  <rect width="100" height="100" rx="26" fill="#0B0F19" />
+  <rect width="98" height="98" x="1" y="1" rx="25" stroke="#1E293B" stroke-width="1.5" />
+
+  <!-- Minimal Modern Geometric "X" with Growth Angle -->
+  <!-- Left ascending arm with facet cut -->
+  <path d="M26 74 L42 50 L30 26 L42 26 L50 40 L58 26 L70 26 L58 50 L74 74 L62 74 L50 56 L38 74 Z" 
+        fill="url(#fxGrad1)" 
+        filter="url(#glow)" />
+  
+  <!-- Sleek intersecting geometric overlay bar -->
+  <path d="M36 26 L74 74 L64 74 L26 26 Z" fill="url(#fxGrad2)" opacity="0.9" />
+
+  <!-- Dynamic upward momentum node (Growth / Alpha accent) -->
+  <polygon points="68,26 76,26 76,34 72,30 68,34" fill="url(#fxAccent)" />
+</svg>
+

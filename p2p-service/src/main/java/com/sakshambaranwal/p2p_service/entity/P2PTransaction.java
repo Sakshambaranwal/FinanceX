@@ -47,6 +47,8 @@ public class P2PTransaction {
 
     private String currency = "USD";
 
+    private String syncPairId;
+
     private LocalDateTime createdAt = LocalDateTime.now();
 }
 

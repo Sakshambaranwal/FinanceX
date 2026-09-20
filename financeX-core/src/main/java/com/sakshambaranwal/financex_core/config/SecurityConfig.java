@@ -39,6 +39,8 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/login",
                     "/register",
+                    "/auth",
+                    "/auth/**",
                     "/ping",
                     "/public/**",
                     "/actuator/**",

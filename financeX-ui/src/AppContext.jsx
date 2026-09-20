@@ -5,9 +5,10 @@ import {
   formatCurrency as formatCurrencyUtil,
   convertAmount as convertAmountUtil,
   getCurrencyFromCountry,
-  SUPPORTED_CURRENCIES
+  SUPPORTED_CURRENCIES,
+  detectDefaultCurrency
 } from './utils/currencyUtils';
-import { API_ENDPOINTS } from './config';
+import { API_ENDPOINTS, DEFAULT_CURRENCY } from './config';
 
 export const AppContext = createContext(null);
 
@@ -30,28 +31,53 @@ export const parseJwt = (token) => {
 };
 
 export const ContextProvider = ({ children }) => {
-  const [jwt, setJwt] = useState(() => {
-    return typeof window !== 'undefined' ? sessionStorage.getItem('jwt') : null;
-  });
-  const [username, setUsername] = useState(() => {
-    if (typeof window === 'undefined') return '';
-    const stored = sessionStorage.getItem('jwt');
-    const payload = parseJwt(stored);
-    return payload?.sub || '';
-  });
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return typeof window !== 'undefined' ? !!sessionStorage.getItem('jwt') : false;
-  });
+  // With HttpOnly cookies, the JWT is managed entirely by the browser/server.
+  // We only keep a lightweight "authenticated" flag and username in React state.
+  // On page load, we verify auth by calling /ping (cookie is sent automatically).
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState('');
+  const [authChecked, setAuthChecked] = useState(false); // true once we've pinged the server
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showBalance, setShowBalance] = useState(true);
   const [userProfile, setUserProfile] = useState(null);
 
-  // Multi-currency state:
-  // homeCurrency: The permanent database currency tied to the user's location/profile.
-  // currency: The ephemeral session/instance viewing currency. On reload, always reverts to homeCurrency.
-  const [homeCurrency, setHomeCurrency] = useState('USD');
-  const [currency, setCurrencyState] = useState('USD');
+  // Theme state: 'light' | 'dark'
+  const [theme, setThemeState] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('financex_theme');
+      if (stored === 'dark' || stored === 'light') return stored;
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    return 'light';
+  });
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      const root = document.documentElement;
+      if (theme === 'dark') {
+        root.classList.add('dark');
+      } else {
+        root.classList.remove('dark');
+      }
+      localStorage.setItem('financex_theme', theme);
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setThemeState(prev => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
+  const setTheme = (newTheme) => {
+    if (newTheme === 'dark' || newTheme === 'light') {
+      setThemeState(newTheme);
+    }
+  };
+
+  // Multi-currency state (defaults to INR for Indian users)
+  const initialCurrency = detectDefaultCurrency();
+  const [homeCurrency, setHomeCurrency] = useState(initialCurrency);
+  const [currency, setCurrencyState] = useState(initialCurrency);
   const [rates, setRates] = useState(DEFAULT_EXCHANGE_RATES);
 
   // Fetch live exchange rates on mount
@@ -63,24 +89,45 @@ export const ContextProvider = ({ children }) => {
     loadRates();
   }, []);
 
-  // Load user profile and user's saved location currency when authenticated
-  const loadUserProfile = async (token) => {
-    const activeToken = token || jwt || sessionStorage.getItem('jwt');
-    if (!activeToken) return;
-
-    try {
-      const res = await fetch(API_ENDPOINTS.USER, {
-        headers: {
-          'Authorization': `Bearer ${activeToken}`
+  // On mount, verify session with server by hitting /user endpoint.
+  // The HttpOnly cookie is sent automatically by the browser.
+  useEffect(() => {
+    const verifySession = async () => {
+      try {
+        const res = await fetch(API_ENDPOINTS.USER, {
+          credentials: 'include', // always send cookies
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setUserProfile(data);
+          setUsername(data.username || data.sub || '');
+          setIsAuthenticated(true);
+          const userCurr = data.currency || (data.addresses?.[0]?.country ? getCurrencyFromCountry(data.addresses[0].country) : initialCurrency);
+          const cleanCurr = (userCurr || initialCurrency).toUpperCase();
+          setHomeCurrency(cleanCurr);
+          setCurrencyState(cleanCurr);
+        } else {
+          // Cookie is absent or expired — user is not logged in
+          setIsAuthenticated(false);
         }
-      });
+      } catch (e) {
+        setIsAuthenticated(false);
+      } finally {
+        setAuthChecked(true);
+      }
+    };
+    verifySession();
+  }, []);
+
+  const loadUserProfile = async () => {
+    try {
+      const res = await fetch(API_ENDPOINTS.USER, { credentials: 'include' });
       if (res.ok) {
         const data = await res.json();
         setUserProfile(data);
-        const userCurr = data.currency || (data.addresses && data.addresses[0]?.country ? getCurrencyFromCountry(data.addresses[0].country) : 'USD');
-        const cleanCurr = (userCurr || 'USD').toUpperCase();
+        const userCurr = data.currency || (data.addresses?.[0]?.country ? getCurrencyFromCountry(data.addresses[0].country) : initialCurrency);
+        const cleanCurr = (userCurr || initialCurrency).toUpperCase();
         setHomeCurrency(cleanCurr);
-        // On load/reload, viewing currency strictly reverts to user location currency
         setCurrencyState(cleanCurr);
       }
     } catch (e) {
@@ -88,47 +135,34 @@ export const ContextProvider = ({ children }) => {
     }
   };
 
-  // Sync token and profile on initial mount
-  useEffect(() => {
-    const storedJwt = sessionStorage.getItem('jwt');
-    if (storedJwt) {
-      setJwt(storedJwt);
-      setIsAuthenticated(true);
-      const payload = parseJwt(storedJwt);
-      if (payload?.sub) {
-        setUsername(payload.sub);
-      }
-      loadUserProfile(storedJwt);
-    }
-  }, []);
-
-  const updateJwt = (newJwt) => {
-    setJwt(newJwt);
-    if (newJwt) {
-      sessionStorage.setItem('jwt', newJwt);
-      setIsAuthenticated(true);
-      const payload = parseJwt(newJwt);
-      if (payload?.sub) {
-        setUsername(payload.sub);
-      }
-      loadUserProfile(newJwt);
-    } else {
-      sessionStorage.removeItem('jwt');
-      setIsAuthenticated(false);
-      setUsername('');
-      setUserProfile(null);
-    }
+  /**
+   * Called after a successful login response.
+   * The gateway has already set the HttpOnly cookie on the response.
+   * We just update local React state with the username.
+   */
+  const signIn = (usernameValue) => {
+    setUsername(usernameValue || '');
+    setIsAuthenticated(true);
+    loadUserProfile();
   };
 
-  // Change viewing currency for this session/instance ONLY.
-  // Does NOT persist to database or survive page reload.
+  /**
+   * Called on logout. Clears local state.
+   * The gateway clears the HttpOnly cookie via Set-Cookie: Max-Age=0.
+   */
+  const signOut = () => {
+    setIsAuthenticated(false);
+    setUsername('');
+    setUserProfile(null);
+    setHomeCurrency(DEFAULT_CURRENCY);
+    setCurrencyState(DEFAULT_CURRENCY);
+  };
+
   const updateCurrency = (newCurrency) => {
     if (!newCurrency) return;
-    const cleanCurrency = newCurrency.toUpperCase();
-    setCurrencyState(cleanCurrency);
+    setCurrencyState(newCurrency.toUpperCase());
   };
 
-  // Update permanent home currency (called when user saves profile address or changes currency in profile)
   const updateHomeCurrency = (newHomeCurrency) => {
     if (!newHomeCurrency) return;
     const clean = newHomeCurrency.toUpperCase();
@@ -136,22 +170,17 @@ export const ContextProvider = ({ children }) => {
     setCurrencyState(clean);
   };
 
-  // Formatting helpers available globally:
-  // If fromCurrency is provided, converts from that currency to active viewing currency.
-  // If fromCurrency is omitted, assumes amount is already in active viewing currency.
   const formatAmount = (amount, fromCurrency = null) => {
     const sourceCurr = fromCurrency || currency;
     return formatCurrencyUtil(amount, currency, rates, sourceCurr);
   };
 
-  // Converts amount between arbitrary currencies
   const convertAmount = (amount, toCurrency = null, fromCurrency = null) => {
     const targetCurr = toCurrency || currency;
     const sourceCurr = fromCurrency || homeCurrency;
     return convertAmountUtil(amount, targetCurr, sourceCurr, rates);
   };
 
-  // Converts an entered amount from active viewing currency into user's home currency for database storage
   const toStorageAmount = (amountInViewingCurrency) => {
     return convertAmountUtil(amountInViewingCurrency, homeCurrency, currency, rates);
   };
@@ -163,28 +192,42 @@ export const ContextProvider = ({ children }) => {
   };
 
   const contextValue = {
-    jwt,
-    setJwt: updateJwt,
+    // Auth
+    isAuthenticated,
+    setIsAuthenticated,
+    authChecked,
     username,
+    setUsername,
     userProfile,
     setUserProfile,
     loadUserProfile,
-    isAuthenticated,
-    setIsAuthenticated,
+    signIn,
+    signOut,
+    // Legacy aliases so other components don't break
+    jwt: null,
+    setJwt: (token) => {
+      // No-op: JWT is managed via HttpOnly cookie now.
+      // signIn() should be called explicitly instead.
+    },
+    // App state
     currentPage,
     setCurrentPage,
     showMobileMenu,
     setShowMobileMenu,
     showBalance,
     setShowBalance,
-    // Currency context
+    // Theme
+    theme,
+    setTheme,
+    toggleTheme,
+    // Currency
     homeCurrency,
     currency,
     setCurrency: updateCurrency,
     updateHomeCurrency,
     rates,
     formatCurrency: formatAmount,
-    toBaseAmount: toStorageAmount, // alias for backwards compatibility
+    toBaseAmount: toStorageAmount,
     toStorageAmount,
     convertAmount,
     currencySymbol: activeCurrencyMeta.symbol,

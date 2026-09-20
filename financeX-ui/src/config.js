@@ -6,6 +6,12 @@ export const GATEWAY_URL =
     ? import.meta.env.VITE_GATEWAY_URL
     : '';
 
+export const GOOGLE_CLIENT_ID =
+  import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+
+export const DEFAULT_CURRENCY =
+  (import.meta.env.VITE_DEFAULT_CURRENCY || 'INR').toUpperCase();
+
 export const API_BASE_URLS = {
   GATEWAY: GATEWAY_URL,
   USER_SERVICE: GATEWAY_URL,
@@ -18,6 +24,7 @@ export const API_ENDPOINTS = {
   // User Routes (via Gateway :8080 -> user-service :8081)
   LOGIN: `${API_BASE_URLS.GATEWAY}/login`,
   REGISTER: `${API_BASE_URLS.GATEWAY}/register`,
+  AUTH_GOOGLE: `${API_BASE_URLS.GATEWAY}/auth/google`,
   USER: `${API_BASE_URLS.GATEWAY}/user`,
   PING: `${API_BASE_URLS.GATEWAY}/ping`,
 

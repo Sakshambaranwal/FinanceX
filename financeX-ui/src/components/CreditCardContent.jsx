@@ -47,7 +47,7 @@ const COMMON_MERCHANTS = [
 ];
 
 const CreditCardContent = () => {
-  const { username, formatCurrency, homeCurrency, currency, currencySymbol } = useContext(AppContext);
+  const { username, formatCurrency, convertAmount, homeCurrency, currency, currencySymbol } = useContext(AppContext);
 
   const [cards, setCards] = useState([]);
   const [summary, setSummary] = useState(null);
@@ -410,7 +410,7 @@ const CreditCardContent = () => {
       paymentDueDays: parseInt(cardFormData.paymentDueDays) || 20,
       annualSpendStartDate: cardFormData.annualSpendStartDate,
       creditLimit: cardFormData.creditLimit ? parseFloat(cardFormData.creditLimit) : null,
-      currency: homeCurrency || 'INR'
+      currency: currency || 'INR'
     };
 
     try {
@@ -497,7 +497,8 @@ const CreditCardContent = () => {
           merchant: spendFormData.merchant.trim(),
           category: spendFormData.category.trim(),
           date: spendFormData.date,
-          description: spendFormData.description.trim()
+          description: spendFormData.description.trim(),
+          currency: currency
         })
       });
 
@@ -507,7 +508,7 @@ const CreditCardContent = () => {
         loadData();
         const capNotice = createdSpend.wasCapped ? ' ⚠️ (capped due to monthly ceiling)' : '';
         setSuccessMsg(
-          `Spend recorded! Earned ${createdSpend.rewardRateApplied.toFixed(1)}% rewards (+${formatCurrency(createdSpend.rewardsEarned, createdSpend.currency || homeCurrency)})${capNotice}`
+          `Spend recorded! Earned ${createdSpend.rewardRateApplied.toFixed(1)}% rewards (+${formatCurrency(createdSpend.rewardsEarned, createdSpend.currency || 'INR')})${capNotice}`
         );
         setTimeout(() => setSuccessMsg(''), 4000);
       } else {
@@ -537,17 +538,28 @@ const CreditCardContent = () => {
     }
   };
 
+  const convertedAnnualSpends = (summary?.cards || []).reduce((sum, item) => {
+    const cardCurr = item.card?.currency || 'INR';
+    const rawSpend = Number(item.currentAnnualSpend) || 0;
+    return sum + (convertAmount ? convertAmount(rawSpend, currency, cardCurr) : rawSpend);
+  }, 0);
+
+  const convertedRewardsEarned = (summary?.cards || []).reduce((sum, item) => {
+    const cardCurr = item.card?.currency || 'INR';
+    const rawRewards = Number(item.totalRewardsEarned) || 0;
+    return sum + (convertAmount ? convertAmount(rawRewards, currency, cardCurr) : rawRewards);
+  }, 0);
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto pb-12">
       {/* Header & Actions */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2.5">
-            <CardIcon className="text-blue-600" size={28} />
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2.5">
+            <CardIcon className="text-blue-600 dark:text-blue-400" size={28} />
             Credit Cards & Rewards Optimizer
           </h2>
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
             Track annual fee waivers, reward caps per cycle, and optimize card choices for every spend
           </p>
         </div>
@@ -555,7 +567,7 @@ const CreditCardContent = () => {
         <div className="flex items-center space-x-3">
           <button
             onClick={() => setIsCatalogModalOpen(true)}
-            className="flex items-center space-x-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-4 py-2.5 rounded-xl font-semibold transition-colors text-sm border border-indigo-200 shadow-2xs"
+            className="flex items-center space-x-2 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 px-4 py-2.5 rounded-xl font-semibold transition-colors text-sm border border-indigo-200 dark:border-indigo-800 shadow-2xs"
           >
             <BookOpen size={17} />
             <span>Bank Cards Catalog</span>
@@ -581,14 +593,14 @@ const CreditCardContent = () => {
       </div>
 
       {successMsg && (
-        <div className="p-4 bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl flex items-center space-x-2 animate-in fade-in">
-          <CheckCircle2 size={18} className="text-green-600 flex-shrink-0" />
+        <div className="p-4 bg-green-50 dark:bg-green-950/40 border border-green-200 dark:border-green-900 text-green-700 dark:text-green-300 text-sm rounded-xl flex items-center space-x-2 animate-in fade-in">
+          <CheckCircle2 size={18} className="text-green-600 dark:text-green-400 flex-shrink-0" />
           <span>{successMsg}</span>
         </div>
       )}
 
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl flex items-center space-x-2">
+        <div className="p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-400 text-sm rounded-xl flex items-center space-x-2">
           <AlertCircle size={18} className="flex-shrink-0" />
           <span>{error}</span>
         </div>
@@ -596,62 +608,62 @@ const CreditCardContent = () => {
 
       {/* High-Level Overview Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
+        <div className="bg-white dark:bg-gray-900 p-5 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Credit Cards</p>
-            <p className="text-2xl font-extrabold text-gray-900 mt-1">
+            <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total Credit Cards</p>
+            <p className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 mt-1">
               {summary?.totalCards || 0}
             </p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               {summary?.ltfCards || 0} LTF &bull; {summary?.feeCards || 0} Fee-paying
             </p>
           </div>
-          <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
+          <div className="p-3 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 rounded-xl">
             <CardIcon size={26} />
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
+        <div className="bg-white dark:bg-gray-900 p-5 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider">Fee Waiver Status</p>
-            <p className="text-2xl font-extrabold text-emerald-700 mt-1">
+            <p className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Fee Waiver Status</p>
+            <p className="text-2xl font-extrabold text-emerald-700 dark:text-emerald-400 mt-1">
               {(summary?.ltfCards || 0) + (summary?.feeWaivedCards || 0)} / {summary?.totalCards || 0}
             </p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               Cards free from annual fee
             </p>
           </div>
-          <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
+          <div className="p-3 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 rounded-xl">
             <ShieldCheck size={26} />
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
+        <div className="bg-white dark:bg-gray-900 p-5 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Annual CC Spends</p>
-            <p className="text-2xl font-extrabold text-gray-900 mt-1">
-              {formatCurrency(summary?.totalAnnualSpends || 0, homeCurrency)}
+            <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Annual CC Spends</p>
+            <p className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 mt-1">
+              {formatCurrency(convertedAnnualSpends)}
             </p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               In current anniversary year
             </p>
           </div>
-          <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
+          <div className="p-3 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 rounded-xl">
             <TrendingUp size={26} />
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
+        <div className="bg-white dark:bg-gray-900 p-5 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-xs font-bold text-amber-600 uppercase tracking-wider">Rewards Earned</p>
-            <p className="text-2xl font-extrabold text-amber-600 mt-1">
-              +{formatCurrency(summary?.totalRewardsEarned || 0, homeCurrency)}
+            <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Rewards Earned</p>
+            <p className="text-2xl font-extrabold text-amber-600 dark:text-amber-400 mt-1">
+              +{formatCurrency(convertedRewardsEarned)}
             </p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               All-time cashback & perks
             </p>
           </div>
-          <div className="p-3 bg-amber-50 text-amber-600 rounded-xl">
+          <div className="p-3 bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 rounded-xl">
             <Award size={26} />
           </div>
         </div>
@@ -728,32 +740,32 @@ const CreditCardContent = () => {
               Please add at least one credit card below to receive personalized card swipe suggestions.
             </div>
           ) : recommendation ? (
-            <div className="mt-6 p-5 bg-white text-gray-900 rounded-2xl shadow-lg border border-white/30 animate-in fade-in">
+            <div className="mt-6 p-5 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-2xl shadow-lg border border-white/30 dark:border-gray-800 animate-in fade-in">
               <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
                 <div>
                   <div className="flex items-center space-x-2 mb-1">
-                    <span className="px-2.5 py-0.5 bg-amber-100 text-amber-900 text-xs font-black uppercase tracking-wider rounded-md flex items-center gap-1">
-                      <Sparkles size={12} className="text-amber-600" /> Best Choice
+                    <span className="px-2.5 py-0.5 bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200 text-xs font-black uppercase tracking-wider rounded-md flex items-center gap-1">
+                      <Sparkles size={12} className="text-amber-600 dark:text-amber-400" /> Best Choice
                     </span>
-                    <span className="text-xs text-gray-500 font-semibold">{recommendation.recommendedCardBank}</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 font-semibold">{recommendation.recommendedCardBank}</span>
                   </div>
-                  <h4 className="text-xl font-extrabold text-blue-900 flex items-center gap-2">
+                  <h4 className="text-xl font-extrabold text-blue-900 dark:text-blue-300 flex items-center gap-2">
                     {recommendation.recommendedCardName}
                     {recommendation.recommendedCardLast4 && (
-                      <span className="text-sm font-normal text-gray-500">(&bull;&bull;&bull;&bull; {recommendation.recommendedCardLast4})</span>
+                      <span className="text-sm font-normal text-gray-500 dark:text-gray-400">(&bull;&bull;&bull;&bull; {recommendation.recommendedCardLast4})</span>
                     )}
                   </h4>
-                  <p className="text-sm text-gray-700 font-medium mt-1">
+                  <p className="text-sm text-gray-700 dark:text-gray-300 font-medium mt-1">
                     {recommendation.reason}
                   </p>
                 </div>
 
-                <div className="text-left md:text-right bg-blue-50/80 p-3.5 rounded-xl border border-blue-100 flex-shrink-0">
-                  <p className="text-[11px] font-bold text-gray-500 uppercase">You Earn</p>
-                  <p className="text-2xl font-black text-emerald-600">
-                    +{formatCurrency(recommendation.rewardAmount, homeCurrency)}
+                <div className="text-left md:text-right bg-blue-50/80 dark:bg-blue-950/60 p-3.5 rounded-xl border border-blue-100 dark:border-blue-900/60 flex-shrink-0">
+                  <p className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase">You Earn</p>
+                  <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
+                    +{formatCurrency(recommendation.rewardAmount, recommendation.card?.currency || 'INR')}
                   </p>
-                  <p className="text-xs font-bold text-indigo-700">
+                  <p className="text-xs font-bold text-indigo-700 dark:text-indigo-300">
                     {recommendation.rewardRate.toFixed(1)}% effective rate
                   </p>
                 </div>
@@ -761,41 +773,47 @@ const CreditCardContent = () => {
 
               {/* Comparison table of all user cards with capping highlights */}
               {recommendation.allEvaluations && recommendation.allEvaluations.length > 1 && (
-                <div className="mt-4 pt-4 border-t border-gray-100">
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Card Comparison for this spend:</p>
+                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+                  <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Card Comparison for this spend:</p>
                   <div className="space-y-2">
-                    {recommendation.allEvaluations.map(ev => (
-                      <div
-                        key={ev.cardId}
-                        className={`p-2.5 rounded-xl text-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 ${
-                          ev.isRecommended ? 'bg-amber-50/80 border border-amber-300' : 'bg-gray-50 border border-gray-100'
-                        }`}
-                      >
-                        <div className="space-y-0.5">
-                          <div className="flex items-center space-x-2">
-                            <span className="font-bold text-gray-900 text-sm">{ev.cardName}</span>
-                            {ev.isCapped && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-red-100 text-red-800">
-                                <AlertTriangle size={11} /> Capped (Max {formatCurrency(ev.rewardAmount, homeCurrency)})
-                              </span>
+                    {recommendation.allEvaluations.map(ev => {
+                      const evCard = cards.find(c => c.card?.id === ev.cardId)?.card;
+                      const evCurr = evCard?.currency || 'INR';
+                      return (
+                        <div
+                          key={ev.cardId}
+                          className={`p-2.5 rounded-xl text-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 ${
+                            ev.isRecommended 
+                              ? 'bg-amber-50/80 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800' 
+                              : 'bg-gray-50 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-700'
+                          }`}
+                        >
+                          <div className="space-y-0.5">
+                            <div className="flex items-center space-x-2">
+                              <span className="font-bold text-gray-900 dark:text-gray-100 text-sm">{ev.cardName}</span>
+                              {ev.isCapped && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300">
+                                  <AlertTriangle size={11} /> Capped (Max {formatCurrency(ev.rewardAmount, evCurr)})
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-gray-500 dark:text-gray-400">{ev.benefitNote}</p>
+                            {ev.cappingRuleSummary && (
+                              <p className="text-[11px] text-gray-400 dark:text-gray-500">{ev.cappingRuleSummary}</p>
                             )}
                           </div>
-                          <p className="text-gray-500">{ev.benefitNote}</p>
-                          {ev.cappingRuleSummary && (
-                            <p className="text-[11px] text-gray-400">{ev.cappingRuleSummary}</p>
-                          )}
-                        </div>
 
-                        <div className="text-left sm:text-right flex-shrink-0">
-                          <p className="font-extrabold text-sm text-emerald-700">
-                            +{formatCurrency(ev.rewardAmount, homeCurrency)}
-                          </p>
-                          <p className="text-gray-400 text-[11px]">
-                            {ev.isCapped ? `Uncapped: ${formatCurrency(ev.uncappedReward, homeCurrency)}` : `${ev.rewardRate.toFixed(1)}%`}
-                          </p>
+                          <div className="text-left sm:text-right flex-shrink-0">
+                            <p className="font-extrabold text-sm text-emerald-700 dark:text-emerald-400">
+                              +{formatCurrency(ev.rewardAmount, evCurr)}
+                            </p>
+                            <p className="text-gray-400 dark:text-gray-500 text-[11px]">
+                              {ev.isCapped ? `Uncapped: ${formatCurrency(ev.uncappedReward, evCurr)}` : `${ev.rewardRate.toFixed(1)}%`}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -810,25 +828,25 @@ const CreditCardContent = () => {
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <div>
-            <h3 className="text-lg font-bold text-gray-900">Your Credit Cards</h3>
-            <p className="text-gray-500 text-xs">Annual spend progress, cycle reward caps, and statement dates</p>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Your Credit Cards</h3>
+            <p className="text-gray-500 dark:text-gray-400 text-xs">Annual spend progress, cycle reward caps, and statement dates</p>
           </div>
           <span className="text-xs text-gray-500 font-medium">{cards.length} card(s) active</span>
         </div>
 
         {loading ? (
-          <div className="p-12 text-center text-gray-400 text-sm">Loading credit cards...</div>
+          <div className="p-12 text-center text-gray-400 dark:text-gray-500 text-sm">Loading credit cards...</div>
         ) : cards.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-dashed border-gray-300 p-12 text-center">
-            <CardIcon size={40} className="mx-auto text-gray-300 mb-3" />
-            <h4 className="text-base font-bold text-gray-800">No credit cards added yet</h4>
-            <p className="text-sm text-gray-400 max-w-md mx-auto mt-1 mb-5">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-dashed border-gray-300 dark:border-gray-700 p-12 text-center">
+            <CardIcon size={40} className="mx-auto text-gray-300 dark:text-gray-600 mb-3" />
+            <h4 className="text-base font-bold text-gray-800 dark:text-gray-200">No credit cards added yet</h4>
+            <p className="text-sm text-gray-400 dark:text-gray-500 max-w-md mx-auto mt-1 mb-5">
               Add your cards or pick from our catalog of popular Indian credit cards to track reward caps, fee waivers, and never miss statement cycles.
             </p>
             <div className="flex justify-center space-x-3">
               <button
                 onClick={() => setIsCatalogModalOpen(true)}
-                className="inline-flex items-center space-x-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-4 py-2 rounded-xl text-sm font-semibold transition-colors border border-indigo-200 shadow-2xs"
+                className="inline-flex items-center space-x-2 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 px-4 py-2 rounded-xl text-sm font-semibold transition-colors border border-indigo-200 dark:border-indigo-800 shadow-2xs"
               >
                 <BookOpen size={16} />
                 <span>Browse Bank Cards</span>
@@ -860,7 +878,7 @@ const CreditCardContent = () => {
               return (
                 <div
                   key={c.id}
-                  className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-all"
+                  className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-all"
                 >
                   {/* Card Visual Top Banner */}
                   <div className={`p-6 text-white relative overflow-hidden ${
@@ -888,7 +906,7 @@ const CreditCardContent = () => {
                           ? 'bg-blue-400 text-blue-950'
                           : 'bg-white/20 text-white'
                       }`}>
-                        {isLtf ? 'LTF (Lifetime Free)' : isWaived ? 'Fee Waived' : `${c.currency || '₹'} ${c.annualFee}/yr`}
+                        {isLtf ? 'LTF (Lifetime Free)' : isWaived ? 'Fee Waived' : `${formatCurrency(c.annualFee, c.currency || 'INR')}/yr`}
                       </span>
                     </div>
 
@@ -913,45 +931,45 @@ const CreditCardContent = () => {
                   {/* Card Details & Capping / Waiver Tracker */}
                   <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                     {/* Cycle & Capping Reset Banner */}
-                    <div className="p-2.5 bg-gray-50 rounded-xl border border-gray-100 flex justify-between items-center text-xs">
+                    <div className="p-2.5 bg-gray-50 dark:bg-gray-800/60 rounded-xl border border-gray-100 dark:border-gray-700 flex justify-between items-center text-xs">
                       <div>
-                        <p className="text-[10px] font-bold text-gray-400 uppercase">Capping Reset Cycle</p>
-                        <p className="font-bold text-gray-800 flex items-center gap-1 mt-0.5">
-                          <Calendar size={13} className="text-indigo-600" />
+                        <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase">Capping Reset Cycle</p>
+                        <p className="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-1 mt-0.5">
+                          <Calendar size={13} className="text-indigo-600 dark:text-indigo-400" />
                           {cycleLabel}
                         </p>
                       </div>
-                      <span className="text-[11px] font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md">
+                      <span className="text-[11px] font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/80 px-2 py-0.5 rounded-md">
                         Resets in {item.daysUntilCycleReset}d
                       </span>
                     </div>
 
                     {/* Accelerated Cap Meter (if card has an accelerated cap like Millennia) */}
                     {item.acceleratedRewardCap != null ? (
-                      <div className="space-y-1 bg-amber-50/60 p-3 rounded-xl border border-amber-200/60">
+                      <div className="space-y-1 bg-amber-50/60 dark:bg-amber-950/30 p-3 rounded-xl border border-amber-200/60 dark:border-amber-900/40">
                         <div className="flex justify-between text-xs">
-                          <span className="font-bold text-amber-900">5% Accelerated Cap:</span>
-                          <span className="font-bold text-gray-800">
-                            {formatCurrency(item.acceleratedRewardsEarnedInCycle, c.currency || homeCurrency)} / {formatCurrency(item.acceleratedRewardCap, c.currency || homeCurrency)}
+                          <span className="font-bold text-amber-900 dark:text-amber-300">5% Accelerated Cap:</span>
+                          <span className="font-bold text-gray-800 dark:text-gray-200">
+                            {formatCurrency(item.acceleratedRewardsEarnedInCycle, c.currency || 'INR')} / {formatCurrency(item.acceleratedRewardCap, c.currency || 'INR')}
                           </span>
                         </div>
-                        <div className="w-full bg-amber-100 rounded-full h-2 overflow-hidden">
+                        <div className="w-full bg-amber-100 dark:bg-amber-900/50 rounded-full h-2 overflow-hidden">
                           <div
                             className="bg-amber-500 h-full transition-all duration-300"
                             style={{ width: `${Math.min(100, (item.acceleratedRewardsEarnedInCycle / item.acceleratedRewardCap) * 100)}%` }}
                           />
                         </div>
-                        <p className="text-[11px] text-amber-800 font-medium text-right">
+                        <p className="text-[11px] text-amber-800 dark:text-amber-400 font-medium text-right">
                           {item.acceleratedRewardRemainingInCycle <= 0 ? (
-                            <span className="text-red-600 font-bold">Capped out this cycle!</span>
+                            <span className="text-red-600 dark:text-red-400 font-bold">Capped out this cycle!</span>
                           ) : (
-                            <span>{formatCurrency(item.acceleratedRewardRemainingInCycle, c.currency || homeCurrency)} headroom remaining</span>
+                            <span>{formatCurrency(item.acceleratedRewardRemainingInCycle, c.currency || 'INR')} headroom remaining</span>
                           )}
                         </p>
                       </div>
                     ) : (
-                      <div className="p-2.5 bg-blue-50/60 rounded-xl text-xs text-blue-800 font-medium flex items-center gap-1.5">
-                        <Sparkles size={14} className="text-blue-600" />
+                      <div className="p-2.5 bg-blue-50/60 dark:bg-blue-950/40 rounded-xl text-xs text-blue-800 dark:text-blue-300 font-medium flex items-center gap-1.5">
+                        <Sparkles size={14} className="text-blue-600 dark:text-blue-400" />
                         <span>Accelerated Rewards: <strong>Unlimited (No Capping)</strong></span>
                       </div>
                     )}
@@ -960,12 +978,12 @@ const CreditCardContent = () => {
                     {!isLtf && c.feeWaiverSpend > 0 && (
                       <div className="space-y-1">
                         <div className="flex justify-between text-xs">
-                          <span className="text-gray-500 font-medium">Fee Waiver Spend:</span>
-                          <span className="font-bold text-gray-900">
-                            {formatCurrency(item.currentAnnualSpend, c.currency || homeCurrency)} / {formatCurrency(c.feeWaiverSpend, c.currency || homeCurrency)}
+                          <span className="text-gray-500 dark:text-gray-400 font-medium">Fee Waiver Spend:</span>
+                          <span className="font-bold text-gray-900 dark:text-gray-100">
+                            {formatCurrency(item.currentAnnualSpend, c.currency || 'INR')} / {formatCurrency(c.feeWaiverSpend, c.currency || 'INR')}
                           </span>
                         </div>
-                        <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                        <div className="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-2 overflow-hidden">
                           <div
                             className={`h-full transition-all duration-500 ${isWaived ? 'bg-emerald-500' : 'bg-blue-600'}`}
                             style={{ width: `${Math.min(100, item.feeWaiverProgressPct)}%` }}
@@ -973,12 +991,12 @@ const CreditCardContent = () => {
                         </div>
                         <p className="text-[11px] text-right font-medium">
                           {isWaived ? (
-                            <span className="text-emerald-700 font-bold flex items-center justify-end gap-1">
+                            <span className="text-emerald-700 dark:text-emerald-400 font-bold flex items-center justify-end gap-1">
                               <CheckCircle2 size={12} /> Fee waiver achieved!
                             </span>
                           ) : (
-                            <span className="text-gray-500">
-                              Spend <strong className="text-indigo-700">{formatCurrency(item.spendRemainingForFeeWaiver, c.currency || homeCurrency)}</strong> more to waive fee
+                            <span className="text-gray-500 dark:text-gray-400">
+                              Spend <strong className="text-indigo-700 dark:text-indigo-400">{formatCurrency(item.spendRemainingForFeeWaiver, c.currency || 'INR')}</strong> more to waive fee
                             </span>
                           )}
                         </p>
@@ -987,13 +1005,13 @@ const CreditCardContent = () => {
 
                     {/* Reward Highlights */}
                     <div>
-                      <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Reward Rates</p>
+                      <p className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1.5">Reward Rates</p>
                       <div className="flex flex-wrap gap-1.5">
-                        <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700">
+                        <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300">
                           {c.baseRewardRate}% Base
                         </span>
                         {Object.entries(merchantRates).slice(0, 4).map(([m, r]) => (
-                          <span key={m} className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-gray-100 text-gray-700">
+                          <span key={m} className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
                             {m}: <strong>{r}%</strong>
                           </span>
                         ))}
@@ -1001,15 +1019,15 @@ const CreditCardContent = () => {
                     </div>
 
                     {/* Billing Cycle Info */}
-                    <div className="pt-2 border-t border-gray-100 grid grid-cols-2 gap-2 text-xs text-gray-500">
+                    <div className="pt-2 border-t border-gray-100 dark:border-gray-800 grid grid-cols-2 gap-2 text-xs text-gray-500 dark:text-gray-400">
                       <div>
-                        <p className="text-[10px] text-gray-400 font-bold uppercase">Statement Date</p>
-                        <p className="font-semibold text-gray-800">{item.nextStatementDate}</p>
+                        <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase">Statement Date</p>
+                        <p className="font-semibold text-gray-800 dark:text-gray-200">{item.nextStatementDate}</p>
                       </div>
                       <div>
-                        <p className="text-[10px] text-gray-400 font-bold uppercase">Payment Due</p>
-                        <p className="font-bold text-red-600">
-                          {item.nextDueDate} <span className="text-[10px] text-gray-400 font-normal">({item.daysUntilDue}d)</span>
+                        <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase">Payment Due</p>
+                        <p className="font-bold text-red-600 dark:text-red-400">
+                          {item.nextDueDate} <span className="text-[10px] text-gray-400 dark:text-gray-500 font-normal">({item.daysUntilDue}d)</span>
                         </p>
                       </div>
                     </div>
@@ -1018,20 +1036,20 @@ const CreditCardContent = () => {
                     <div className="pt-2 flex items-center space-x-2">
                       <button
                         onClick={() => handleOpenAddSpendModal(c.id)}
-                        className="flex-1 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs rounded-xl transition-colors text-center"
+                        className="flex-1 py-2 bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-bold text-xs rounded-xl transition-colors text-center"
                       >
                         + Spend
                       </button>
                       <button
                         onClick={() => handleOpenEditCardModal(item)}
-                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-gray-50 rounded-xl transition-colors"
+                        className="p-2 text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl transition-colors"
                         title="Edit card details"
                       >
                         <Edit3 size={15} />
                       </button>
                       <button
                         onClick={() => handleDeleteCard(c.id, c.cardName)}
-                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors"
+                        className="p-2 text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition-colors"
                         title="Delete card"
                       >
                         <Trash2 size={15} />
@@ -1048,80 +1066,130 @@ const CreditCardContent = () => {
       {/* ========================================================================= */}
       {/* SPENDS HISTORY & REWARDS LEDGER */}
       {/* ========================================================================= */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
           <div>
-            <h3 className="font-bold text-gray-900 text-base">Credit Card Spends & Rewards Ledger</h3>
-            <p className="text-gray-400 text-xs">Recent purchases and rewards accrued</p>
+            <h3 className="font-bold text-gray-900 dark:text-gray-100 text-base">Credit Card Spends & Rewards Ledger</h3>
+            <p className="text-gray-400 dark:text-gray-500 text-xs">Recent purchases and rewards accrued</p>
           </div>
-          <span className="text-xs text-gray-500 font-medium">{spends.length} transaction(s)</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">{spends.length} transaction(s)</span>
         </div>
 
         {spends.length === 0 ? (
-          <div className="p-12 text-center text-gray-400 text-sm">
+          <div className="p-12 text-center text-gray-400 dark:text-gray-500 text-sm">
             No credit card spends recorded yet. Click "Record CC Spend" to log your first purchase!
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-gray-600">
-              <thead className="bg-gray-50 text-xs uppercase font-bold text-gray-400 border-b border-gray-100">
-                <tr>
-                  <th className="px-6 py-3.5">Card</th>
-                  <th className="px-6 py-3.5">Date</th>
-                  <th className="px-6 py-3.5">Merchant & Category</th>
-                  <th className="px-6 py-3.5 text-right">Spend Amount</th>
-                  <th className="px-6 py-3.5 text-right">Reward Rate</th>
-                  <th className="px-6 py-3.5 text-right">Rewards Earned</th>
-                  <th className="px-6 py-3.5 text-center">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {spends.map((sp) => {
-                  const parentCard = cards.find(c => c.card.id === sp.cardId);
-                  return (
-                    <tr key={sp.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 font-bold text-gray-900">
-                        {parentCard?.card?.cardName || 'Card'}
-                        {parentCard?.card?.cardLast4 && (
-                          <span className="text-xs text-gray-400 font-normal ml-1">(&bull;&bull;&bull;&bull; {parentCard.card.cardLast4})</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 text-gray-500 whitespace-nowrap">{sp.date}</td>
-                      <td className="px-6 py-4">
-                        <p className="font-semibold text-gray-800">{sp.merchant || 'General'}</p>
-                        <p className="text-xs text-gray-400">{sp.description || sp.category}</p>
-                      </td>
-                      <td className="px-6 py-4 text-right font-extrabold text-gray-900 whitespace-nowrap">
-                        {formatCurrency(sp.amount, sp.currency || homeCurrency)}
-                      </td>
-                      <td className="px-6 py-4 text-right whitespace-nowrap">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-blue-50 text-blue-700">
-                          {sp.rewardRateApplied.toFixed(1)}%
+          <>
+            {/* Mobile Card List View (< md) */}
+            <div className="md:hidden divide-y divide-gray-100 dark:divide-gray-800">
+              {spends.map((sp) => {
+                const parentCard = cards.find(c => c.card.id === sp.cardId);
+                return (
+                  <div key={sp.id} className="p-4 space-y-2 hover:bg-gray-50/60 dark:hover:bg-gray-800/40 transition-colors">
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="font-bold text-gray-900 dark:text-gray-100 text-sm truncate">
+                          {sp.merchant || 'General'}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                          {parentCard?.card?.cardName || 'Credit Card'}
+                          {parentCard?.card?.cardLast4 && ` (••${parentCard.card.cardLast4})`}
+                        </p>
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <p className="font-extrabold text-gray-900 dark:text-gray-100 text-sm sm:text-base">
+                          {formatCurrency(sp.amount, sp.currency || parentCard?.card?.currency || 'INR')}
+                        </p>
+                        <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                          +{formatCurrency(sp.rewardsEarned, sp.currency || parentCard?.card?.currency || 'INR')}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs text-gray-400 dark:text-gray-500 pt-1">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span>{sp.date}</span>
+                        <span>&bull;</span>
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300">
+                          {sp.rewardRateApplied.toFixed(1)}% {sp.wasCapped ? '(Capped)' : ''}
                         </span>
-                        {sp.wasCapped && (
-                          <span className="ml-1.5 text-[10px] text-red-600 font-bold" title="Capped by cycle limit">
-                            (Capped)
+                      </div>
+                      <button
+                        onClick={() => handleDeleteSpend(sp.id)}
+                        className="p-1 text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                        title="Delete spend"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop Table View (>= md) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-sm text-gray-600 dark:text-gray-300">
+                <thead className="bg-gray-50 dark:bg-gray-800/50 text-xs uppercase font-bold text-gray-400 dark:text-gray-500 border-b border-gray-100 dark:border-gray-800">
+                  <tr>
+                    <th className="px-6 py-3.5">Card</th>
+                    <th className="px-6 py-3.5">Date</th>
+                    <th className="px-6 py-3.5">Merchant & Category</th>
+                    <th className="px-6 py-3.5 text-right">Spend Amount</th>
+                    <th className="px-6 py-3.5 text-right">Reward Rate</th>
+                    <th className="px-6 py-3.5 text-right">Rewards Earned</th>
+                    <th className="px-6 py-3.5 text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                  {spends.map((sp) => {
+                    const parentCard = cards.find(c => c.card.id === sp.cardId);
+                    return (
+                      <tr key={sp.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                        <td className="px-6 py-4 font-bold text-gray-900 dark:text-gray-100">
+                          {parentCard?.card?.cardName || 'Card'}
+                          {parentCard?.card?.cardLast4 && (
+                            <span className="text-xs text-gray-400 font-normal ml-1">(&bull;&bull;&bull;&bull; {parentCard.card.cardLast4})</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{sp.date}</td>
+                        <td className="px-6 py-4">
+                          <p className="font-semibold text-gray-800 dark:text-gray-200">{sp.merchant || 'General'}</p>
+                          <p className="text-xs text-gray-400 dark:text-gray-500">{sp.description || sp.category}</p>
+                        </td>
+                        <td className="px-6 py-4 text-right font-extrabold text-gray-900 dark:text-gray-100 whitespace-nowrap">
+                          {formatCurrency(sp.amount, sp.currency || parentCard?.card?.currency || 'INR')}
+                        </td>
+                        <td className="px-6 py-4 text-right whitespace-nowrap">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300">
+                            {sp.rewardRateApplied.toFixed(1)}%
                           </span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 text-right font-bold text-emerald-600 whitespace-nowrap">
-                        +{formatCurrency(sp.rewardsEarned, sp.currency || homeCurrency)}
-                      </td>
-                      <td className="px-6 py-4 text-center whitespace-nowrap">
-                        <button
-                          onClick={() => handleDeleteSpend(sp.id)}
-                          className="p-1 text-gray-300 hover:text-red-600 rounded transition-colors"
-                          title="Delete spend entry"
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                          {sp.wasCapped && (
+                            <span className="ml-1.5 text-[10px] text-red-600 font-bold" title="Capped by cycle limit">
+                              (Capped)
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-right font-bold text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
+                          +{formatCurrency(sp.rewardsEarned, sp.currency || parentCard?.card?.currency || 'INR')}
+                        </td>
+                        <td className="px-6 py-4 text-center whitespace-nowrap">
+                          <button
+                            onClick={() => handleDeleteSpend(sp.id)}
+                            className="p-1 text-gray-300 hover:text-red-600 dark:hover:text-red-400 rounded transition-colors"
+                            title="Delete spend entry"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
@@ -1130,24 +1198,24 @@ const CreditCardContent = () => {
       {/* ========================================================================= */}
       {isCatalogModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-4xl w-full p-6 sm:p-8 shadow-2xl border border-gray-200 my-8 animate-in fade-in zoom-in duration-200 max-h-[90vh] flex flex-col">
-            <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-100">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl max-w-4xl w-full p-6 sm:p-8 shadow-2xl border border-gray-200 dark:border-gray-800 my-8 animate-in fade-in zoom-in duration-200 max-h-[90vh] flex flex-col">
+            <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-100 dark:border-gray-800">
               <div>
-                <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                  <BookOpen className="text-indigo-600" size={22} />
+                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                  <BookOpen className="text-indigo-600 dark:text-indigo-400" size={22} />
                   Bank Credit Cards & Cashback Criteria Catalog
                 </h3>
-                <p className="text-xs text-gray-400 mt-0.5">
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                   Official reward structures, accelerated capping limits, and cycle rules for major Indian credit cards
                 </p>
               </div>
-              <button onClick={() => setIsCatalogModalOpen(false)} className="text-gray-400 hover:text-gray-600 p-1">
+              <button onClick={() => setIsCatalogModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1">
                 <X size={20} />
               </button>
             </div>
 
             {/* Bank Filter Tabs */}
-            <div className="flex flex-wrap gap-1.5 mb-4 pb-2 border-b border-gray-100">
+            <div className="flex flex-wrap gap-1.5 mb-4 pb-2 border-b border-gray-100 dark:border-gray-800">
               {CARDS_CATALOG.map(b => (
                 <button
                   key={b.bank}
@@ -1155,7 +1223,7 @@ const CreditCardContent = () => {
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
                     selectedCatalogBank === b.bank
                       ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                   }`}
                 >
                   {b.bank} ({b.cards.length})
@@ -1168,33 +1236,33 @@ const CreditCardContent = () => {
               {CARDS_CATALOG.find(b => b.bank === selectedCatalogBank)?.cards.map(c => (
                 <div
                   key={c.id}
-                  className="p-4 bg-gray-50 hover:bg-indigo-50/40 rounded-2xl border border-gray-200 transition-all flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+                  className="p-4 bg-gray-50 dark:bg-gray-800/60 hover:bg-indigo-50/40 dark:hover:bg-indigo-950/40 rounded-2xl border border-gray-200 dark:border-gray-700 transition-all flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
                 >
                   <div className="space-y-1.5 flex-1">
                     <div className="flex items-center space-x-2">
-                      <h4 className="font-extrabold text-gray-900 text-base">{c.cardName}</h4>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-200 text-gray-700">
+                      <h4 className="font-extrabold text-gray-900 dark:text-gray-100 text-base">{c.cardName}</h4>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
                         {c.network}
                       </span>
                       {c.isLtf ? (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300">
                           Lifetime Free
                         </span>
                       ) : (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800">
-                          ₹{c.annualFee}/yr (Waiver at ₹{c.feeWaiverSpend.toLocaleString('en-IN')})
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-950/70 text-blue-800 dark:text-blue-300">
+                          {formatCurrency(c.annualFee, c.currency || 'INR')}/yr (Waiver at {formatCurrency(c.feeWaiverSpend, c.currency || 'INR')})
                         </span>
                       )}
                     </div>
 
-                    <p className="text-xs text-gray-600 font-medium">{c.description}</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300 font-medium">{c.description}</p>
 
                     {/* Capping & Reset Specs */}
                     <div className="flex flex-wrap gap-2 pt-1 text-[11px]">
-                      <span className="px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-900 font-semibold">
-                        {c.acceleratedRewardCap ? `5% Cap: ₹${c.acceleratedRewardCap.toLocaleString('en-IN')}` : 'Accelerated: Unlimited'}
+                      <span className="px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-900/60 text-amber-900 dark:text-amber-300 font-semibold">
+                        {c.acceleratedRewardCap ? `5% Cap: ${formatCurrency(c.acceleratedRewardCap, c.currency || 'INR')}` : 'Accelerated: Unlimited'}
                       </span>
-                      <span className="px-2 py-0.5 rounded bg-indigo-50 border border-indigo-200 text-indigo-900 font-semibold">
+                      <span className="px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-900/60 text-indigo-900 dark:text-indigo-300 font-semibold">
                         Cycle: {c.cappingCycle === 'CALENDAR_MONTH' ? 'Calendar Month' : 'Statement Date'}
                       </span>
                     </div>
@@ -1218,19 +1286,19 @@ const CreditCardContent = () => {
       {/* ========================================================================= */}
       {isCardModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-gray-200 animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-gray-200 dark:border-gray-800 animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                <CardIcon size={22} className="text-blue-600" />
+              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <CardIcon size={22} className="text-blue-600 dark:text-blue-400" />
                 {editingCardId ? 'Edit Credit Card' : 'Add Credit Card'}
               </h3>
-              <button onClick={() => setIsCardModalOpen(false)} className="text-gray-400 hover:text-gray-600 p-1">
+              <button onClick={() => setIsCardModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1">
                 <X size={20} />
               </button>
             </div>
 
             {cardModalError && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-center space-x-2">
+              <div className="mb-4 p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
                 <AlertCircle size={16} className="flex-shrink-0" />
                 <span>{cardModalError}</span>
               </div>
@@ -1240,14 +1308,14 @@ const CreditCardContent = () => {
               {/* Bank and Card Dropdowns (Primary selection) */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">
                     Bank / Issuer <span className="text-red-500">*</span>
                   </label>
                   <select
                     value={selectedDropdownBank}
                     onChange={(e) => handleDropdownBankChange(e.target.value)}
                     required
-                    className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
+                    className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium"
                   >
                     <option value="">-- Choose Bank / Issuer --</option>
                     {CARDS_CATALOG.map((b) => (
@@ -1260,7 +1328,7 @@ const CreditCardContent = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">
                     Card Name <span className="text-red-500">*</span>
                   </label>
                   <select
@@ -1268,7 +1336,7 @@ const CreditCardContent = () => {
                     onChange={(e) => handleDropdownCardChange(e.target.value)}
                     disabled={!selectedDropdownBank}
                     required
-                    className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium disabled:bg-gray-100 disabled:text-gray-400"
+                    className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium disabled:bg-gray-100 dark:disabled:bg-gray-800/40 disabled:text-gray-400 dark:disabled:text-gray-500"
                   >
                     <option value="">
                       {!selectedDropdownBank
@@ -1280,7 +1348,7 @@ const CreditCardContent = () => {
                     {selectedDropdownBank && selectedDropdownBank !== 'CUSTOM' && (
                       CARDS_CATALOG.find((b) => b.bank === selectedDropdownBank)?.cards?.map((c) => (
                         <option key={c.id} value={c.id}>
-                          {c.cardName} ({c.isLtf ? 'LTF' : `₹${c.annualFee}/yr`})
+                          {c.cardName} ({c.isLtf ? 'LTF' : `${formatCurrency(c.annualFee, 'INR')}/yr`})
                         </option>
                       ))
                     )}
@@ -1291,10 +1359,10 @@ const CreditCardContent = () => {
 
               {/* Conditional inputs for custom bank or card names */}
               {(selectedDropdownBank === 'CUSTOM' || selectedDropdownCardId === 'CUSTOM') && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-3 bg-blue-50/70 border border-blue-200 rounded-2xl animate-in fade-in">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-3 bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-2xl animate-in fade-in">
                   {selectedDropdownBank === 'CUSTOM' && (
                     <div>
-                      <label className="block text-xs font-bold text-blue-900 uppercase mb-1">
+                      <label className="block text-xs font-bold text-blue-900 dark:text-blue-300 uppercase mb-1">
                         Custom Issuer / Bank Name <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -1303,13 +1371,13 @@ const CreditCardContent = () => {
                         placeholder="e.g. Standard Chartered"
                         value={cardFormData.bank}
                         onChange={(e) => setCardFormData({ ...cardFormData, bank: e.target.value })}
-                        className="w-full px-3.5 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                        className="w-full px-3.5 py-2 border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                       />
                     </div>
                   )}
                   {selectedDropdownCardId === 'CUSTOM' && (
                     <div>
-                      <label className="block text-xs font-bold text-blue-900 uppercase mb-1">
+                      <label className="block text-xs font-bold text-blue-900 dark:text-blue-300 uppercase mb-1">
                         Custom Card Name <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -1318,7 +1386,7 @@ const CreditCardContent = () => {
                         placeholder="e.g. My Premium Card"
                         value={cardFormData.cardName}
                         onChange={(e) => setCardFormData({ ...cardFormData, cardName: e.target.value })}
-                        className="w-full px-3.5 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                        className="w-full px-3.5 py-2 border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                       />
                     </div>
                   )}
@@ -1326,8 +1394,8 @@ const CreditCardContent = () => {
               )}
 
               {selectedDropdownCardId && selectedDropdownCardId !== 'CUSTOM' && (
-                <div className="text-xs text-blue-800 bg-blue-50/80 p-2.5 rounded-xl border border-blue-100 flex items-start gap-2">
-                  <Info size={15} className="text-blue-600 flex-shrink-0 mt-0.5" />
+                <div className="text-xs text-blue-800 dark:text-blue-300 bg-blue-50/80 dark:bg-blue-950/50 p-2.5 rounded-xl border border-blue-100 dark:border-blue-900/60 flex items-start gap-2">
+                  <Info size={15} className="text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
                   <span>
                     {CARDS_CATALOG.find((b) => b.bank === selectedDropdownBank)?.cards?.find((c) => c.id === selectedDropdownCardId)?.description ||
                       'Standard card terms, reward caps, fee waivers, and merchant rates have been loaded below. You can customize them if needed.'}
@@ -1337,23 +1405,23 @@ const CreditCardContent = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Last 4 Digits</label>
+                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">Last 4 Digits</label>
                   <input
                     type="text"
                     maxLength={4}
                     placeholder="e.g. 4321"
                     value={cardFormData.cardLast4}
                     onChange={(e) => setCardFormData({ ...cardFormData, cardLast4: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Network</label>
+                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">Network</label>
                   <select
                     value={cardFormData.network}
                     onChange={(e) => setCardFormData({ ...cardFormData, network: e.target.value })}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   >
                     <option value="Visa">Visa</option>
                     <option value="Mastercard">Mastercard</option>
@@ -1364,21 +1432,21 @@ const CreditCardContent = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Credit Limit ({currencySymbol})</label>
+                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">Credit Limit ({currencySymbol})</label>
                   <input
                     type="number"
                     placeholder="e.g. 200000"
                     value={cardFormData.creditLimit}
                     onChange={(e) => setCardFormData({ ...cardFormData, creditLimit: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   />
                 </div>
               </div>
 
               {/* Fee & Waiver Section */}
-              <div className="p-4 bg-gray-50 rounded-2xl border border-gray-200 space-y-3">
+              <div className="p-4 bg-gray-50 dark:bg-gray-800/60 rounded-2xl border border-gray-200 dark:border-gray-700 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold text-gray-800">Fee Structure</span>
+                  <span className="text-sm font-bold text-gray-800 dark:text-gray-200">Fee Structure</span>
                   <label className="flex items-center space-x-2 cursor-pointer">
                     <input
                       type="checkbox"
@@ -1386,14 +1454,14 @@ const CreditCardContent = () => {
                       onChange={(e) => setCardFormData({ ...cardFormData, isLtf: e.target.checked })}
                       className="w-4 h-4 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500"
                     />
-                    <span className="text-xs font-bold text-emerald-700">Lifetime Free (LTF)</span>
+                    <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400">Lifetime Free (LTF)</span>
                   </label>
                 </div>
 
                 {!cardFormData.isLtf && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                     <div>
-                      <label className="block text-xs font-semibold text-gray-600 mb-1">
+                      <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
                         Annual Fee ({currencySymbol})
                       </label>
                       <input
@@ -1401,11 +1469,11 @@ const CreditCardContent = () => {
                         placeholder="e.g. 999"
                         value={cardFormData.annualFee}
                         onChange={(e) => setCardFormData({ ...cardFormData, annualFee: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-gray-600 mb-1">
+                      <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
                         Min Spends for Fee Waiver ({currencySymbol})
                       </label>
                       <input
@@ -1413,7 +1481,7 @@ const CreditCardContent = () => {
                         placeholder="e.g. 100000"
                         value={cardFormData.feeWaiverSpend}
                         onChange={(e) => setCardFormData({ ...cardFormData, feeWaiverSpend: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                   </div>
@@ -1421,12 +1489,12 @@ const CreditCardContent = () => {
               </div>
 
               {/* Reward Capping & Cycle Rules */}
-              <div className="p-4 bg-amber-50/60 rounded-2xl border border-amber-200 space-y-3">
-                <span className="text-sm font-bold text-amber-900">Reward Capping & Cycle Rules</span>
+              <div className="p-4 bg-amber-50/60 dark:bg-amber-950/30 rounded-2xl border border-amber-200 dark:border-amber-900/50 space-y-3">
+                <span className="text-sm font-bold text-amber-900 dark:text-amber-300">Reward Capping & Cycle Rules</span>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 mb-1">
+                    <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
                       5% Accel Cap ({currencySymbol})
                     </label>
                     <input
@@ -1434,12 +1502,12 @@ const CreditCardContent = () => {
                       placeholder="e.g. 1000 (blank = unltd)"
                       value={cardFormData.acceleratedRewardCap}
                       onChange={(e) => setCardFormData({ ...cardFormData, acceleratedRewardCap: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-amber-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 mb-1">
+                    <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
                       1% Base Cap ({currencySymbol})
                     </label>
                     <input
@@ -1447,18 +1515,18 @@ const CreditCardContent = () => {
                       placeholder="e.g. 1000 (blank = unltd)"
                       value={cardFormData.baseRewardCap}
                       onChange={(e) => setCardFormData({ ...cardFormData, baseRewardCap: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-amber-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 mb-1">
+                    <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
                       Capping Reset Cycle
                     </label>
                     <select
                       value={cardFormData.cappingCycle}
                       onChange={(e) => setCardFormData({ ...cardFormData, cappingCycle: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-amber-500"
                     >
                       <option value="STATEMENT_CYCLE">Statement Cycle</option>
                       <option value="CALENDAR_MONTH">Calendar Month</option>
@@ -1468,14 +1536,14 @@ const CreditCardContent = () => {
               </div>
 
               {/* Reward Rates Section */}
-              <div className="p-4 bg-gray-50 rounded-2xl border border-gray-200 space-y-3">
+              <div className="p-4 bg-gray-50 dark:bg-gray-800/60 rounded-2xl border border-gray-200 dark:border-gray-700 space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-bold text-gray-800">Merchant Reward Rates</span>
+                  <span className="text-sm font-bold text-gray-800 dark:text-gray-200">Merchant Reward Rates</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 mb-1">
+                    <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
                       Base Rate (%)
                     </label>
                     <input
@@ -1484,12 +1552,12 @@ const CreditCardContent = () => {
                       placeholder="1.0"
                       value={cardFormData.baseRewardRate}
                       onChange={(e) => setCardFormData({ ...cardFormData, baseRewardRate: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="block text-xs font-semibold text-gray-600 mb-1">
+                    <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
                       Merchant Specific Rates (e.g. Amazon: 5%)
                     </label>
                     <div className="flex gap-2">
@@ -1498,7 +1566,7 @@ const CreditCardContent = () => {
                         placeholder="Merchant (e.g. Amazon)"
                         value={customMerchantName}
                         onChange={(e) => setCustomMerchantName(e.target.value)}
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-xl text-xs bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                       <input
                         type="number"
@@ -1506,7 +1574,7 @@ const CreditCardContent = () => {
                         placeholder="Rate %"
                         value={customMerchantRate}
                         onChange={(e) => setCustomMerchantRate(e.target.value)}
-                        className="w-20 px-2 py-2 border border-gray-300 rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-20 px-2 py-2 border border-gray-300 dark:border-gray-700 rounded-xl text-xs bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                       <button
                         type="button"
@@ -1525,7 +1593,7 @@ const CreditCardContent = () => {
                     {Object.entries(cardFormData.merchantRewardRates).map(([m, r]) => (
                       <span
                         key={m}
-                        className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-100 text-blue-900 font-medium"
+                        className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 border border-blue-100 dark:border-blue-900/60 text-blue-900 dark:text-blue-200 font-medium"
                       >
                         <strong>{m}</strong>: {r}%
                         <button
@@ -1544,7 +1612,7 @@ const CreditCardContent = () => {
               {/* Billing Cycle Dates */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Statement Day</label>
+                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">Statement Day</label>
                   <input
                     type="number"
                     min="1"
@@ -1552,38 +1620,38 @@ const CreditCardContent = () => {
                     placeholder="15"
                     value={cardFormData.billingCycleDay}
                     onChange={(e) => setCardFormData({ ...cardFormData, billingCycleDay: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Due in (Days)</label>
+                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">Due in (Days)</label>
                   <input
                     type="number"
                     min="1"
                     placeholder="20"
                     value={cardFormData.paymentDueDays}
                     onChange={(e) => setCardFormData({ ...cardFormData, paymentDueDays: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Annual Start Date</label>
+                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">Annual Start Date</label>
                   <input
                     type="date"
                     value={cardFormData.annualSpendStartDate}
                     onChange={(e) => setCardFormData({ ...cardFormData, annualSpendStartDate: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   />
                 </div>
               </div>
 
-              <div className="flex justify-end space-x-3 pt-4 border-t border-gray-100">
+              <div className="flex justify-end space-x-3 pt-4 border-t border-gray-100 dark:border-gray-800">
                 <button
                   type="button"
                   onClick={() => setIsCardModalOpen(false)}
-                  className="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 text-sm font-medium"
+                  className="px-5 py-2.5 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 text-sm font-medium transition-colors"
                 >
                   Cancel
                 </button>
@@ -1605,19 +1673,19 @@ const CreditCardContent = () => {
       {/* ========================================================================= */}
       {isSpendModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-gray-200 animate-in fade-in zoom-in duration-200">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-gray-200 dark:border-gray-800 animate-in fade-in zoom-in duration-200">
             <div className="flex justify-between items-center mb-5">
-              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <ShoppingBag size={20} className="text-emerald-600" />
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <ShoppingBag size={20} className="text-emerald-600 dark:text-emerald-400" />
                 Record Credit Card Spend
               </h3>
-              <button onClick={() => setIsSpendModalOpen(false)} className="text-gray-400 hover:text-gray-600 p-1">
+              <button onClick={() => setIsSpendModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1">
                 <X size={20} />
               </button>
             </div>
 
             {spendModalError && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-center space-x-2">
+              <div className="mb-4 p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
                 <AlertCircle size={16} className="flex-shrink-0" />
                 <span>{spendModalError}</span>
               </div>
@@ -1625,14 +1693,14 @@ const CreditCardContent = () => {
 
             <form onSubmit={handleAddSpend} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">
                   Select Credit Card <span className="text-red-500">*</span>
                 </label>
                 <select
                   required
                   value={spendFormData.cardId}
                   onChange={(e) => setSpendFormData({ ...spendFormData, cardId: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {cards.map(c => (
                     <option key={c.card.id} value={c.card.id}>
@@ -1643,7 +1711,7 @@ const CreditCardContent = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">
                   Spend Amount ({currencySymbol}) <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -1653,18 +1721,18 @@ const CreditCardContent = () => {
                   placeholder="e.g. 2499"
                   value={spendFormData.amount}
                   onChange={(e) => setSpendFormData({ ...spendFormData, amount: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-700 rounded-xl text-sm font-bold bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Merchant / Platform</label>
+                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">Merchant / Platform</label>
                 <input
                   type="text"
                   placeholder="e.g. Amazon, Swiggy, Uber"
                   value={spendFormData.merchant}
                   onChange={(e) => setSpendFormData({ ...spendFormData, merchant: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   {['Amazon', 'Flipkart', 'Swiggy', 'Zomato', 'Uber', 'Groceries'].map(m => (
@@ -1672,7 +1740,7 @@ const CreditCardContent = () => {
                       key={m}
                       type="button"
                       onClick={() => setSpendFormData({ ...spendFormData, merchant: m })}
-                      className="text-[11px] px-2 py-0.5 bg-gray-100 hover:bg-gray-200 rounded text-gray-700"
+                      className="text-[11px] px-2 py-0.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-gray-700 dark:text-gray-300 transition-colors"
                     >
                       {m}
                     </button>
@@ -1682,11 +1750,11 @@ const CreditCardContent = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Category</label>
+                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">Category</label>
                   <select
                     value={spendFormData.category}
                     onChange={(e) => setSpendFormData({ ...spendFormData, category: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-xl text-xs bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="Shopping">Shopping</option>
                     <option value="Dining">Dining</option>
@@ -1700,25 +1768,25 @@ const CreditCardContent = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Date</label>
+                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">Date</label>
                   <input
                     type="date"
                     required
                     value={spendFormData.date}
                     onChange={(e) => setSpendFormData({ ...spendFormData, date: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-xl text-xs bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Description / Notes</label>
+                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">Description / Notes</label>
                 <input
                   type="text"
                   placeholder="e.g. Birthday dinner, Electronics order"
                   value={spendFormData.description}
                   onChange={(e) => setSpendFormData({ ...spendFormData, description: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -1726,7 +1794,7 @@ const CreditCardContent = () => {
                 <button
                   type="button"
                   onClick={() => setIsSpendModalOpen(false)}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 text-sm font-medium"
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 text-sm font-medium transition-colors"
                 >
                   Cancel
                 </button>

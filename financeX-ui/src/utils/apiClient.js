@@ -1,17 +1,9 @@
 // Centralized Authenticated API Client for FinanceX
-// Automatically attaches JWT Bearer token from sessionStorage to all gateway requests
-
-export const getAuthToken = () => {
-  return sessionStorage.getItem('jwt') || '';
-};
+// With HttpOnly cookies, the browser sends the JWT cookie automatically on every request.
+// We just need to ensure credentials: 'include' is always set.
 
 export const authFetch = async (url, options = {}) => {
-  const token = getAuthToken();
   const headers = new Headers(options.headers || {});
-
-  if (token && !headers.has('Authorization')) {
-    headers.set('Authorization', `Bearer ${token}`);
-  }
 
   // Set default JSON Content-Type if body is a string and Content-Type is not provided
   if (options.body && typeof options.body === 'string' && !headers.has('Content-Type')) {
@@ -21,14 +13,18 @@ export const authFetch = async (url, options = {}) => {
   const mergedOptions = {
     ...options,
     headers,
+    credentials: 'include', // Always send the HttpOnly JWT cookie
   };
 
   try {
     const response = await fetch(url, mergedOptions);
 
-    // If 401 Unauthorized occurs on protected API calls, clear expired token
     if (response.status === 401 && !url.includes('/login') && !url.includes('/register') && !url.includes('/ping')) {
-      console.warn('Session expired or unauthorized request. Clearing session token.');
+      console.warn(`[authFetch] Unauthorized (401) on ${url}`);
+      // Notify application of auth failure without forcing hard page reloads
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('financex:auth_error', { detail: { url, status: 401 } }));
+      }
     }
 
     return response;
@@ -39,4 +35,3 @@ export const authFetch = async (url, options = {}) => {
 };
 
 export default authFetch;
-

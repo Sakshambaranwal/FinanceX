@@ -189,130 +189,136 @@ const DashboardContent = () => {
   const netBalance = totalInvestments - totalExpenses;
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-4 sm:space-y-6 max-w-7xl mx-auto">
       {/* Balance Banner */}
-      <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white p-6 sm:p-8 rounded-2xl shadow-sm">
-        <div className="flex justify-between items-center mb-4">
+      <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl shadow-md relative overflow-hidden">
+        <div className="flex justify-between items-center mb-3">
           <div>
-            <h2 className="text-sm font-medium text-blue-100 uppercase tracking-wider">Estimated Net Worth</h2>
-            <p className="text-xs text-blue-200 mt-0.5">Holdings minus recorded expenses</p>
+            <h2 className="text-xs sm:text-sm font-medium text-blue-100 uppercase tracking-wider">Estimated Net Worth</h2>
+            <p className="text-[11px] sm:text-xs text-blue-200 mt-0.5">Holdings minus recorded expenses</p>
           </div>
           <button 
             onClick={() => setShowBalance(!showBalance)}
-            className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+            className="p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-colors"
           >
-            {showBalance ? <Eye size={20} /> : <EyeOff size={20} />}
+            {showBalance ? <Eye size={18} /> : <EyeOff size={18} />}
           </button>
         </div>
-        <p className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+        <p className="text-2xl sm:text-4xl font-extrabold tracking-tight">
           {showBalance ? formatCurrency(netBalance) : '••••••••'}
         </p>
-        <div className="flex items-center space-x-4 mt-4 pt-4 border-t border-white/10 text-xs text-blue-100">
+        <div className="flex items-center space-x-4 mt-3 pt-3 border-t border-white/15 text-xs text-blue-100">
           <span>Logged in as: <strong className="text-white">@{username || 'guest'}</strong></span>
         </div>
       </div>
 
-      {/* Metrics Row (Including Mandatory Monthly Expenses) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
-          <div>
-            <p className="text-gray-400 text-xs font-bold uppercase tracking-wider">Total Expenses</p>
-            <p className="text-xl font-bold text-red-600 mt-1">
+      {/* Metrics Row: 2 columns on mobile, 4 on desktop */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-white dark:bg-gray-900 p-4 sm:p-5 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <p className="text-gray-400 dark:text-gray-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider">Total Expenses</p>
+            <div className="p-2 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl">
+              <ArrowDownRight size={18} />
+            </div>
+          </div>
+          <div className="mt-2">
+            <p className="text-lg sm:text-xl font-extrabold text-red-600 dark:text-red-400 truncate">
               {formatCurrency(totalExpenses)}
             </p>
-            <Link to="/expenses" className="text-xs text-blue-600 font-medium hover:underline mt-1 inline-block">
-              Manage expenses &rarr;
+            <Link to="/expenses" className="text-[11px] sm:text-xs text-blue-600 dark:text-blue-400 font-medium hover:underline mt-1 inline-block">
+              Manage &rarr;
             </Link>
-          </div>
-          <div className="p-2.5 bg-red-50 text-red-600 rounded-xl">
-            <ArrowDownRight size={22} />
           </div>
         </div>
 
         {/* Mandatory Monthly Card */}
-        <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
-          <div>
-            <p className="text-gray-400 text-xs font-bold uppercase tracking-wider">Mandatory Monthly</p>
-            <p className="text-xl font-bold text-indigo-700 mt-1">
-              {formatCurrency(mandatoryMonthlyExpenses)}
-            </p>
-            <p className="text-[11px] text-gray-400 mt-1">Rent, Bills, Subscriptions</p>
-          </div>
-          <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl">
-            <Repeat size={22} />
-          </div>
-        </div>
-
-        <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
-          <div>
-            <p className="text-gray-400 text-xs font-bold uppercase tracking-wider">Investments</p>
-            <p className="text-xl font-bold text-green-600 mt-1">
-              {formatCurrency(totalInvestments)}
-            </p>
-            <Link to="/investments" className="text-xs text-green-600 font-medium hover:underline mt-1 inline-block">
-              View portfolio &rarr;
-            </Link>
-          </div>
-          <div className="p-2.5 bg-green-50 text-green-600 rounded-xl">
-            <TrendingUp size={22} />
-          </div>
-        </div>
-
-        <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
-          <div>
-            <p className="text-gray-400 text-xs font-bold uppercase tracking-wider">Quick Actions</p>
-            <div className="flex space-x-2 mt-2">
-              <Link
-                to="/expenses"
-                className="px-2.5 py-1 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-xs font-semibold transition-colors"
-              >
-                + Expense
-              </Link>
-              <Link
-                to="/investments"
-                className="px-2.5 py-1 bg-green-50 text-green-700 hover:bg-green-100 rounded-lg text-xs font-semibold transition-colors"
-              >
-                + Investment
-              </Link>
+        <div className="bg-white dark:bg-gray-900 p-4 sm:p-5 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <p className="text-gray-400 dark:text-gray-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider">Mandatory</p>
+            <div className="p-2 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-xl">
+              <Repeat size={18} />
             </div>
           </div>
-          <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl">
-            <PlusCircle size={22} />
+          <div className="mt-2">
+            <p className="text-lg sm:text-xl font-extrabold text-indigo-600 dark:text-indigo-400 truncate">
+              {formatCurrency(mandatoryMonthlyExpenses)}
+            </p>
+            <p className="text-[10px] sm:text-[11px] text-gray-400 dark:text-gray-500 mt-1 truncate">Monthly Bills & Rent</p>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-900 p-4 sm:p-5 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <p className="text-gray-400 dark:text-gray-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider">Investments</p>
+            <div className="p-2 bg-green-50 dark:bg-green-950/40 text-green-600 dark:text-green-400 rounded-xl">
+              <TrendingUp size={18} />
+            </div>
+          </div>
+          <div className="mt-2">
+            <p className="text-lg sm:text-xl font-extrabold text-green-600 dark:text-green-400 truncate">
+              {formatCurrency(totalInvestments)}
+            </p>
+            <Link to="/investments" className="text-[11px] sm:text-xs text-green-600 dark:text-green-400 font-medium hover:underline mt-1 inline-block">
+              Portfolio &rarr;
+            </Link>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-900 p-4 sm:p-5 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <p className="text-gray-400 dark:text-gray-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider">Quick Add</p>
+            <div className="p-2 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 rounded-xl">
+              <PlusCircle size={18} />
+            </div>
+          </div>
+          <div className="flex space-x-1.5 mt-3">
+            <Link
+              to="/expenses"
+              className="flex-1 text-center py-1 bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 hover:bg-blue-100 rounded-lg text-[11px] font-semibold transition-colors"
+            >
+              + Expense
+            </Link>
+            <Link
+              to="/investments"
+              className="flex-1 text-center py-1 bg-green-50 dark:bg-green-950/50 text-green-700 dark:text-green-300 hover:bg-green-100 rounded-lg text-[11px] font-semibold transition-colors"
+            >
+              + Invest
+            </Link>
           </div>
         </div>
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+      <div className="bg-white dark:bg-gray-900 p-5 sm:p-6 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-xs">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-base font-bold text-gray-900">Recent Transactions</h3>
-          <Link to="/expenses" className="text-xs text-blue-600 font-medium hover:underline">
+          <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-gray-100">Recent Transactions</h3>
+          <Link to="/expenses" className="text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline">
             View all
           </Link>
         </div>
 
         {recentExpenses.length === 0 ? (
-          <div className="py-8 text-center text-gray-400 text-sm">
-            No transactions recorded yet. Go to <Link to="/expenses" className="text-blue-600 underline">Expenses</Link> to add your first transaction!
+          <div className="py-8 text-center text-gray-400 dark:text-gray-500 text-sm">
+            No transactions recorded yet. Go to <Link to="/expenses" className="text-blue-600 dark:text-blue-400 underline">Expenses</Link> to add your first transaction!
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-gray-100 dark:divide-gray-800">
             {recentExpenses.map((tx) => (
               <div key={tx.id} className="flex justify-between items-center py-3">
-                <div className="flex items-center space-x-2">
-                  <div>
-                    <div className="flex items-center space-x-2">
-                      <p className="font-semibold text-gray-900 text-sm">{tx.description || tx.category}</p>
+                <div className="flex items-center space-x-2 min-w-0 pr-2">
+                  <div className="min-w-0">
+                    <div className="flex items-center space-x-1.5 flex-wrap">
+                      <p className="font-semibold text-gray-900 dark:text-gray-100 text-sm truncate">{tx.description || tx.category}</p>
                       {tx.recurring && (
-                        <span className="text-[10px] bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded font-bold">
-                          🔁 Monthly
+                        <span className="text-[10px] bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 rounded font-bold">
+                          Monthly
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-gray-400">{tx.date} &bull; {tx.category}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">{tx.date} &bull; {tx.category}</p>
                   </div>
                 </div>
-                <p className="font-bold text-red-600 text-sm">
+                <p className="font-bold text-red-600 dark:text-red-400 text-sm flex-shrink-0">
                   -{formatCurrency(tx.amount, tx.currency || homeCurrency)}
                 </p>
               </div>

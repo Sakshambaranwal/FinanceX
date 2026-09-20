@@ -10,8 +10,11 @@ import com.sakshambaranwal.p2p_service.entity.P2PContact;
 
 @Repository
 public interface P2PContactRepository extends JpaRepository<P2PContact, String> {
+    List<P2PContact> findAllByUsernameIgnoreCaseOrderByNameAsc(String username);
     List<P2PContact> findAllByUsernameOrderByNameAsc(String username);
     Optional<P2PContact> findByIdAndUsername(String id, String username);
+    Optional<P2PContact> findByUsernameIgnoreCaseAndLinkedUsernameIgnoreCase(String username, String linkedUsername);
+    Optional<P2PContact> findByUsernameAndLinkedUsername(String username, String linkedUsername);
     void deleteByIdAndUsername(String id, String username);
 }
 

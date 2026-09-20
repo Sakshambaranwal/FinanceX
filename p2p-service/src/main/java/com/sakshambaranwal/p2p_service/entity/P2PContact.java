@@ -30,6 +30,11 @@ public class P2PContact {
     private String name;
 
     private String phone;
+    private String email;
+    private String upiId;
+
+    private Boolean isSynced = false;
+    private String linkedUsername;
 
     private String notes;
     private String currency = "USD";

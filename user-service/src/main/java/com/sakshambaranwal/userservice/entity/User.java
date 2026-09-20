@@ -46,15 +46,21 @@ public class User {
     private String phone;
     private boolean phoneVerified=false;
 
+    @Column(length = 100)
+    private String upiId;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private List<Address> addresses;
 
     @Column(length = 10)
-    private String currency = "USD";
+    private String currency;
 
     @Column(nullable = false)
     private Boolean premium = false;
+
+    @Column(length = 50)
+    private String authProvider = "LOCAL";
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

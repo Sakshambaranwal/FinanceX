@@ -11,6 +11,8 @@ import com.sakshambaranwal.p2p_service.entity.P2PTransaction;
 public interface P2PTransactionRepository extends JpaRepository<P2PTransaction, String> {
     List<P2PTransaction> findAllByContactIdOrderByDateAscCreatedAtAsc(String contactId);
     List<P2PTransaction> findAllByUsername(String username);
+    List<P2PTransaction> findAllBySyncPairId(String syncPairId);
     void deleteAllByContactId(String contactId);
+    void deleteAllBySyncPairId(String syncPairId);
 }
 

@@ -11,13 +11,22 @@ import ProfileContent from "./components/ProfileContent";
 import LoginContent from "./components/LoginContent";
 import SignupContent from "./components/SignupContent";
 
-// Protected Route Guard: Requires authentication, redirects to /login if logged out
+// Protected Route Guard: Requires authentication, redirects to /login if logged out.
+// Waits for authChecked before deciding — prevents flash-redirect on page reload.
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, jwt } = useAppContext();
+  const { isAuthenticated, authChecked } = useAppContext();
   const location = useLocation();
-  const token = jwt || (typeof window !== "undefined" ? sessionStorage.getItem("jwt") : null);
 
-  if (!isAuthenticated && !token) {
+  // Still verifying cookie with server — show smooth spinner (no flash or blank screen)
+  if (!authChecked) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
@@ -25,12 +34,19 @@ const ProtectedRoute = ({ children }) => {
 };
 
 // Public Only Route Guard: For /login and /signup
-// If user is already authenticated, redirect to /dashboard
+// If user is already authenticated (cookie still valid), redirect to /dashboard
 const PublicOnlyRoute = ({ children }) => {
-  const { isAuthenticated, jwt } = useAppContext();
-  const token = jwt || (typeof window !== "undefined" ? sessionStorage.getItem("jwt") : null);
+  const { isAuthenticated, authChecked } = useAppContext();
 
-  if (isAuthenticated || token) {
+  if (!authChecked) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
 
