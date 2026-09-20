@@ -96,18 +96,28 @@ export default defineConfig({
     allowedHosts: true,
     proxy: sharedProxyConfig
   },
-  plugins: [react(), VitePWA({
+  plugins: [
+    react(),
+    VitePWA({
       registerType: 'autoUpdate',
+      devOptions: {
+        enabled: true,
+        type: 'module',
+      },
       manifest: {
         name: 'FinanceX',
         short_name: 'FinanceX',
         description: 'FinanceX | Smart Wealth, Expense & Credit OS',
         theme_color: '#0b0f19',
+        background_color: '#0b0f19',
+        display: 'standalone',
+        start_url: '/',
         icons: [
           { src: 'logo.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any maskable' },
           { src: 'image.png', sizes: '192x192', type: 'image/png' },
           { src: 'image.png', sizes: '512x512', type: 'image/png' },
         ],
       },
-    }),],
+    }),
+  ],
 })

@@ -10,6 +10,7 @@ import CreditCardContent from "./components/CreditCardContent";
 import ProfileContent from "./components/ProfileContent";
 import LoginContent from "./components/LoginContent";
 import SignupContent from "./components/SignupContent";
+import InstallPrompt from "./components/InstallPrompt";
 
 // Protected Route Guard: Requires authentication, redirects to /login if logged out.
 // Waits for authChecked before deciding — prevents flash-redirect on page reload.
@@ -126,6 +127,7 @@ function App() {
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </FinanceApp>
+        <InstallPrompt />
       </BrowserRouter>
     </ContextProvider>
   );
