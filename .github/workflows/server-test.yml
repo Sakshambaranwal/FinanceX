@@ -7,7 +7,7 @@ on:
 
 jobs:
   test-server:
-    runs-on: [self-hosted, financeX]
+    runs-on: [self-hosted]
 
     steps:
       - name: Test Windows Server
