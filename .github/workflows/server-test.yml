@@ -1,0 +1,21 @@
+name: Windows Server Test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test-server:
+    runs-on: [self-hosted, financeX]
+
+    steps:
+      - name: Test Windows Server
+        shell: powershell
+        run: |
+          Write-Host "================================"
+          Write-Host "FinanceX Windows Server"
+          Write-Host "================================"
+          Write-Host "Computer Name: $env:COMPUTERNAME"
+          Write-Host "User: $env:USERNAME"
+          Write-Host "Runner is working successfully!"
