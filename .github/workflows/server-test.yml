@@ -35,25 +35,25 @@ jobs:
             }
           }
 
-          $safeDirectories = @(& git config --global --get-all safe.directory 2>$null)
-          if ($LASTEXITCODE -ne 0) { $safeDirectories = @() }
-          if ($safeDirectories -notcontains $deployPath) {
-            & git config --global --add safe.directory $deployPath
-            if ($LASTEXITCODE -ne 0) { throw "Could not trust deployment checkout for runner Git: $deployPath" }
+          function Invoke-DeploymentGit {
+            param([string[]]$GitArgs)
+            $output = & git -c "safe.directory=$deployPath" -C $deployPath @GitArgs 2>&1
+            $exitCode = $LASTEXITCODE
+            if ($exitCode -ne 0) {
+              $details = ($output | Out-String).Trim()
+              throw "git $($GitArgs -join ' ') failed (exit $exitCode): $details"
+            }
+            return $output
           }
 
-          $branchOutput = & git -C $deployPath branch --show-current
-          if ($LASTEXITCODE -ne 0) { throw 'Unable to read deployment checkout branch.' }
+          $branchOutput = Invoke-DeploymentGit -GitArgs @('branch', '--show-current')
           $branch = ($branchOutput -join "`n").Trim()
           if ($branch -ne 'main') { throw "Deployment checkout must be on main; found '$branch'." }
 
-          & git -C $deployPath diff --quiet
-          if ($LASTEXITCODE -ne 0) { throw 'Tracked deployment files have local changes; refusing to deploy.' }
-          & git -C $deployPath diff --cached --quiet
-          if ($LASTEXITCODE -ne 0) { throw 'Deployment checkout has staged local changes; refusing to deploy.' }
+          Invoke-DeploymentGit -GitArgs @('diff', '--quiet') | Out-Null
+          Invoke-DeploymentGit -GitArgs @('diff', '--cached', '--quiet') | Out-Null
 
-          & git -C $deployPath pull --ff-only origin main
-          if ($LASTEXITCODE -ne 0) { throw 'Could not fast-forward deployment checkout from origin/main.' }
+          Invoke-DeploymentGit -GitArgs @('pull', '--ff-only', 'origin', 'main')
 
       - name: Build Spring services
         shell: powershell
