@@ -89,7 +89,8 @@ jobs:
             $deployPath = 'C:\Users\Saksham Kumar\Desktop\VSC\FinanceX'
           }
           $sourcePath = Join-Path $deployPath 'financeX-ui'
-          $frontendBuildPath = Join-Path $deployPath "financeX-ui-ci-$([guid]::NewGuid().ToString('N'))"
+          $frontendBuildRoot = Join-Path $env:RUNNER_TEMP "financeX-ui-ci-$([guid]::NewGuid().ToString('N'))"
+          $frontendBuildPath = Join-Path $frontendBuildRoot 'financeX-ui'
           New-Item -ItemType Directory -Path $frontendBuildPath | Out-Null
 
           try {
@@ -111,7 +112,7 @@ jobs:
           }
           finally {
             Set-Location -LiteralPath $deployPath
-            Remove-Item -LiteralPath $frontendBuildPath -Recurse -Force -ErrorAction SilentlyContinue
+            Remove-Item -LiteralPath $frontendBuildRoot -Recurse -Force -ErrorAction SilentlyContinue
           }
 
       - name: Restart FinanceX
