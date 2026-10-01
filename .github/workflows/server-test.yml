@@ -1,4 +1,4 @@
-name: Windows Server Test
+name: Deploy FinanceX
 
 on:
   push:
@@ -6,16 +6,116 @@ on:
       - main
 
 jobs:
-  test-server:
+  deploy:
     runs-on: [self-hosted]
+    concurrency:
+      group: financex-production
+      cancel-in-progress: false
+    env:
+      FINANCEX_DEPLOY_PATH: ${{ vars.FINANCEX_DEPLOY_PATH }}
 
     steps:
-      - name: Test Windows Server
+      # This deliberately uses the existing checkout on the PC, not the runner's temporary workspace.
+      - name: Sync deployment checkout
         shell: powershell
         run: |
-          Write-Host "================================"
-          Write-Host "FinanceX Windows Server"
-          Write-Host "================================"
-          Write-Host "Computer Name: $env:COMPUTERNAME"
-          Write-Host "User: $env:USERNAME"
-          Write-Host "Runner is working successfully!"
+          $ErrorActionPreference = 'Stop'
+          $deployPath = $env:FINANCEX_DEPLOY_PATH
+          if ([string]::IsNullOrWhiteSpace($deployPath)) {
+            $deployPath = 'C:\Users\Saksham Kumar\Desktop\VSC\FinanceX'
+          }
+          if (-not (Test-Path -LiteralPath $deployPath -PathType Container)) {
+            throw "Deployment checkout not found: $deployPath"
+          }
+
+          $requiredScripts = @('start-all.ps1', 'stop-all.ps1', 'status.ps1')
+          foreach ($scriptName in $requiredScripts) {
+            if (-not (Test-Path -LiteralPath (Join-Path $deployPath $scriptName) -PathType Leaf)) {
+              throw "Required deployment script not found: $(Join-Path $deployPath $scriptName)"
+            }
+          }
+
+          $branch = (& git -C $deployPath branch --show-current).Trim()
+          if ($LASTEXITCODE -ne 0) { throw 'Unable to read deployment checkout branch.' }
+          if ($branch -ne 'main') { throw "Deployment checkout must be on main; found '$branch'." }
+
+          & git -C $deployPath diff --quiet
+          if ($LASTEXITCODE -ne 0) { throw 'Tracked deployment files have local changes; refusing to deploy.' }
+          & git -C $deployPath diff --cached --quiet
+          if ($LASTEXITCODE -ne 0) { throw 'Deployment checkout has staged local changes; refusing to deploy.' }
+
+          & git -C $deployPath pull --ff-only origin main
+          if ($LASTEXITCODE -ne 0) { throw 'Could not fast-forward deployment checkout from origin/main.' }
+
+      - name: Build Spring services
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $deployPath = $env:FINANCEX_DEPLOY_PATH
+          if ([string]::IsNullOrWhiteSpace($deployPath)) {
+            $deployPath = 'C:\Users\Saksham Kumar\Desktop\VSC\FinanceX'
+          }
+          Set-Location -LiteralPath $deployPath
+          $services = @('user-service', 'expense-service', 'p2p-service', 'creditcard-service', 'financeX-core')
+          foreach ($service in $services) {
+            $wrapper = Join-Path $deployPath "$service\mvnw.cmd"
+            & $wrapper -f "$service\pom.xml" clean package
+            if ($LASTEXITCODE -ne 0) { throw "Build failed for $service (exit code $LASTEXITCODE)." }
+          }
+
+      - name: Build frontend
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $deployPath = $env:FINANCEX_DEPLOY_PATH
+          if ([string]::IsNullOrWhiteSpace($deployPath)) {
+            $deployPath = 'C:\Users\Saksham Kumar\Desktop\VSC\FinanceX'
+          }
+          Set-Location -LiteralPath (Join-Path $deployPath 'financeX-ui')
+          & npm.cmd ci
+          if ($LASTEXITCODE -ne 0) { throw "npm ci failed (exit code $LASTEXITCODE)." }
+          & npm.cmd run lint
+          if ($LASTEXITCODE -ne 0) { throw "Frontend lint failed (exit code $LASTEXITCODE)." }
+          & npm.cmd run build
+          if ($LASTEXITCODE -ne 0) { throw "Frontend build failed (exit code $LASTEXITCODE)." }
+
+      - name: Restart FinanceX
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $deployPath = $env:FINANCEX_DEPLOY_PATH
+          if ([string]::IsNullOrWhiteSpace($deployPath)) {
+            $deployPath = 'C:\Users\Saksham Kumar\Desktop\VSC\FinanceX'
+          }
+          Set-Location -LiteralPath $deployPath
+          & .\stop-all.ps1
+          if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) { throw "stop-all.ps1 failed (exit code $LASTEXITCODE)." }
+          & .\start-all.ps1
+          if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) { throw "start-all.ps1 failed (exit code $LASTEXITCODE)." }
+
+      - name: Check deployment health
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $deployPath = $env:FINANCEX_DEPLOY_PATH
+          if ([string]::IsNullOrWhiteSpace($deployPath)) {
+            $deployPath = 'C:\Users\Saksham Kumar\Desktop\VSC\FinanceX'
+          }
+          Set-Location -LiteralPath $deployPath
+          & .\status.ps1
+          if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) { throw "status.ps1 failed (exit code $LASTEXITCODE)." }
+
+          $healthUrl = 'http://127.0.0.1:8080/ping'
+          $healthy = $false
+          for ($attempt = 0; $attempt -lt 30; $attempt++) {
+            try {
+              $response = Invoke-WebRequest -Uri $healthUrl -UseBasicParsing -TimeoutSec 3
+              if ($response.StatusCode -eq 200) {
+                $healthy = $true
+                break
+              }
+            } catch {
+            }
+            Start-Sleep -Seconds 2
+          }
+          if (-not $healthy) { throw "FinanceX gateway did not become healthy at $healthUrl." }
