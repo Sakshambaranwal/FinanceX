@@ -96,6 +96,7 @@ jobs:
           try {
             & robocopy $sourcePath $frontendBuildPath /E /XD node_modules dist dev-dist /NFL /NDL /NJH /NJS /NC /NS /NP
             if ($LASTEXITCODE -ge 8) { throw "Could not stage frontend source (robocopy exit code $LASTEXITCODE)." }
+            $global:LASTEXITCODE = 0
 
             Set-Location -LiteralPath $frontendBuildPath
             & npm.cmd ci
@@ -109,6 +110,7 @@ jobs:
             Set-Location -LiteralPath $deployPath
             & robocopy (Join-Path $frontendBuildPath 'dist') (Join-Path $sourcePath 'dist') /MIR /NFL /NDL /NJH /NJS /NC /NS /NP
             if ($LASTEXITCODE -ge 8) { throw "Could not publish frontend build (robocopy exit code $LASTEXITCODE)." }
+            $global:LASTEXITCODE = 0
           }
           finally {
             Set-Location -LiteralPath $deployPath
