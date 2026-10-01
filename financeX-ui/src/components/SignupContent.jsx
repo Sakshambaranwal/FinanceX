@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { AppContext } from '../AppContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { MapPin, Sparkles, Globe, DollarSign } from 'lucide-react';
+import { MapPin, Sparkles, Globe, DollarSign, Eye, EyeOff } from 'lucide-react';
 import { 
   fetchUserLocation, 
   getCurrencyFromCountry, 
@@ -21,6 +21,7 @@ const SignupContent = () => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   
   // Location & Currency states
   const [city, setCity] = useState('');
@@ -28,7 +29,6 @@ const SignupContent = () => {
   const [selectedCurrency, setSelectedCurrency] = useState(detectDefaultCurrency);
   const [detectingLocation, setDetectingLocation] = useState(true);
   const [locationDetected, setLocationDetected] = useState(false);
-  const [locationSource, setLocationSource] = useState('');
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -53,7 +53,6 @@ const SignupContent = () => {
             setSelectedCurrency(derivedCurr);
           }
           setLocationDetected(true);
-          setLocationSource(loc.source);
         }
       } catch (err) {
         console.warn('Could not auto-detect location:', err);
@@ -219,14 +218,25 @@ const SignupContent = () => {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Password <span className="text-red-500">*</span>
             </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-              placeholder="Create a password"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                placeholder="Create a password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((visible) => !visible)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-pressed={showPassword}
+                className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           {/* Location & Address Auto-detected Fields */}
