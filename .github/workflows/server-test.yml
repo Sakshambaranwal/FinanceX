@@ -35,8 +35,16 @@ jobs:
             }
           }
 
-          $branch = (& git -C $deployPath branch --show-current).Trim()
+          $safeDirectories = @(& git config --global --get-all safe.directory 2>$null)
+          if ($LASTEXITCODE -ne 0) { $safeDirectories = @() }
+          if ($safeDirectories -notcontains $deployPath) {
+            & git config --global --add safe.directory $deployPath
+            if ($LASTEXITCODE -ne 0) { throw "Could not trust deployment checkout for runner Git: $deployPath" }
+          }
+
+          $branchOutput = & git -C $deployPath branch --show-current
           if ($LASTEXITCODE -ne 0) { throw 'Unable to read deployment checkout branch.' }
+          $branch = ($branchOutput -join "`n").Trim()
           if ($branch -ne 'main') { throw "Deployment checkout must be on main; found '$branch'." }
 
           & git -C $deployPath diff --quiet
