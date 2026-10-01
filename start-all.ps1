@@ -4,14 +4,9 @@ $root = $PSScriptRoot
 $logDir = Join-Path $root 'logs'
 $jdk = 'C:\Program Files\Microsoft\jdk-21.0.12.101-hotspot'
 $node = 'C:\Program Files\nodejs'
-$maven = Get-ChildItem 'C:\Users\Saksham Kumar\.m2\wrapper\dists\apache-maven-3.9.10' -Filter 'mvn.cmd' -Recurse -ErrorAction SilentlyContinue |
-    Select-Object -First 1 -ExpandProperty FullName
 
 if (-not (Test-Path (Join-Path $jdk 'bin\java.exe'))) {
     throw "JDK 21 was not found at $jdk"
-}
-if (-not $maven) {
-    throw 'Maven 3.9.10 was not found in the local Maven wrapper cache.'
 }
 if (-not (Test-Path (Join-Path $node 'npm.cmd'))) {
     throw "Node.js was not found at $node"
@@ -43,9 +38,13 @@ function Start-Backend($name, $directory, $port) {
     }
 
     $serviceRoot = Join-Path $root $directory
+    $mavenWrapper = Join-Path $serviceRoot 'mvnw.cmd'
+    if (-not (Test-Path $mavenWrapper)) {
+        throw "Maven wrapper was not found for $name at $mavenWrapper"
+    }
     $stdout = Join-Path $logDir "$name.log"
     $stderr = Join-Path $logDir "$name.err.log"
-    $command = "& '$maven' spring-boot:run"
+    $command = "& '$mavenWrapper' spring-boot:run"
     Start-Process -FilePath 'powershell.exe' `
         -ArgumentList '-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', $command `
         -WorkingDirectory $serviceRoot `
