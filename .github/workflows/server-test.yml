@@ -88,13 +88,30 @@ jobs:
           if ([string]::IsNullOrWhiteSpace($deployPath)) {
             $deployPath = 'C:\Users\Saksham Kumar\Desktop\VSC\FinanceX'
           }
-          Set-Location -LiteralPath (Join-Path $deployPath 'financeX-ui')
-          & npm.cmd ci
-          if ($LASTEXITCODE -ne 0) { throw "npm ci failed (exit code $LASTEXITCODE)." }
-          & .\node_modules\.bin\eslint.cmd src/components/LoginContent.jsx src/components/SignupContent.jsx
-          if ($LASTEXITCODE -ne 0) { throw "Changed-form lint failed (exit code $LASTEXITCODE)." }
-          & npm.cmd run build
-          if ($LASTEXITCODE -ne 0) { throw "Frontend build failed (exit code $LASTEXITCODE)." }
+          $sourcePath = Join-Path $deployPath 'financeX-ui'
+          $frontendBuildPath = Join-Path $deployPath "financeX-ui-ci-$([guid]::NewGuid().ToString('N'))"
+          New-Item -ItemType Directory -Path $frontendBuildPath | Out-Null
+
+          try {
+            & robocopy $sourcePath $frontendBuildPath /E /XD node_modules dist dev-dist /NFL /NDL /NJH /NJS /NC /NS /NP
+            if ($LASTEXITCODE -ge 8) { throw "Could not stage frontend source (robocopy exit code $LASTEXITCODE)." }
+
+            Set-Location -LiteralPath $frontendBuildPath
+            & npm.cmd ci
+            if ($LASTEXITCODE -ne 0) { throw "npm ci failed (exit code $LASTEXITCODE)." }
+            & .\node_modules\.bin\eslint.cmd src/components/LoginContent.jsx src/components/SignupContent.jsx
+            if ($LASTEXITCODE -ne 0) { throw "Changed-form lint failed (exit code $LASTEXITCODE)." }
+            & npm.cmd run build
+            if ($LASTEXITCODE -ne 0) { throw "Frontend build failed (exit code $LASTEXITCODE)." }
+
+            Set-Location -LiteralPath $deployPath
+            & robocopy (Join-Path $frontendBuildPath 'dist') (Join-Path $sourcePath 'dist') /MIR /NFL /NDL /NJH /NJS /NC /NS /NP
+            if ($LASTEXITCODE -ge 8) { throw "Could not publish frontend build (robocopy exit code $LASTEXITCODE)." }
+          }
+          finally {
+            Set-Location -LiteralPath $deployPath
+            Remove-Item -LiteralPath $frontendBuildPath -Recurse -Force -ErrorAction SilentlyContinue
+          }
 
       - name: Restart FinanceX
         shell: powershell
