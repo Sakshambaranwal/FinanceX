@@ -37,8 +37,15 @@ jobs:
 
           function Invoke-DeploymentGit {
             param([string[]]$GitArgs)
-            $output = & git -c "safe.directory=$deployPath" -C $deployPath @GitArgs 2>&1
-            $exitCode = $LASTEXITCODE
+            $previousErrorActionPreference = $ErrorActionPreference
+            $ErrorActionPreference = 'Continue'
+            try {
+              $safePath = $deployPath.Replace('\', '/')
+              $output = & git -c "safe.directory=$safePath" -C $deployPath @GitArgs 2>&1
+              $exitCode = $LASTEXITCODE
+            } finally {
+              $ErrorActionPreference = $previousErrorActionPreference
+            }
             if ($exitCode -ne 0) {
               $details = ($output | Out-String).Trim()
               throw "git $($GitArgs -join ' ') failed (exit $exitCode): $details"
