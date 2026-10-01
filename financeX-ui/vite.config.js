@@ -84,7 +84,7 @@ const sharedProxyConfig = {
 
 // https://vite.dev/config/
 export default defineConfig({
-  envDir: '..',
+  envDir: process.env.FINANCEX_ENV_DIR || '..',
   server: {
     ...(httpsOptions ? { https: httpsOptions } : {}),
     host: true,

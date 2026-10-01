@@ -101,6 +101,7 @@ jobs:
             if ($LASTEXITCODE -ne 0) { throw "npm ci failed (exit code $LASTEXITCODE)." }
             & .\node_modules\.bin\eslint.cmd src/components/LoginContent.jsx src/components/SignupContent.jsx
             if ($LASTEXITCODE -ne 0) { throw "Changed-form lint failed (exit code $LASTEXITCODE)." }
+            $env:FINANCEX_ENV_DIR = $deployPath
             & npm.cmd run build
             if ($LASTEXITCODE -ne 0) { throw "Frontend build failed (exit code $LASTEXITCODE)." }
 
