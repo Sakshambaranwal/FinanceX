@@ -64,6 +64,8 @@ jobs:
 
       - name: Build Spring services
         shell: powershell
+        env:
+          GOOGLE_CLIENT_ID: ci-placeholder
         run: |
           $ErrorActionPreference = 'Stop'
           $deployPath = $env:FINANCEX_DEPLOY_PATH
