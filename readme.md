@@ -3,7 +3,6 @@
 **FinanceX** is a modern, full-stack Personal Finance Tracking, Rewards Optimization, and Expense Analysis platform built on a scalable microservices architecture.
 
 ---
-
 ## 🏛️ System Architecture
 
 All client and frontend traffic routes through the **`financeX-core` API Gateway & Security Microservice** on a single unified port (**8080**), which performs centralized CORS validation, JWT bearer token verification, and reverse-proxy routing to downstream internal microservices.
