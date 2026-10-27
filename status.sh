@@ -17,7 +17,7 @@ EXPENSE_PORT="${EXPENSE_SERVICE_PORT:-8082}"
 P2P_PORT="${P2P_SERVICE_PORT:-8084}"
 CC_PORT="${CREDITCARD_SERVICE_PORT:-8086}"
 GATEWAY_P="${GATEWAY_PORT:-8080}"
-FRONTEND_P="${FRONTEND_PORT:-5173}"
+NGINX_P="${NGINX_PORT:-80}"
 
 check_status() {
     local name=$1
@@ -30,7 +30,11 @@ check_status() {
     fi
 }
 
-check_status "financeX-ui" "$FRONTEND_P"
+if command -v systemctl > /dev/null 2>&1 && systemctl is-active --quiet nginx; then
+    printf " %-24s : \033[0;32mRUNNING\033[0m (Port %s, NGINX service)\n" "financeX-ui (NGINX)" "$NGINX_P"
+else
+    check_status "financeX-ui (NGINX)" "$NGINX_P"
+fi
 check_status "financeX-core (Gateway)" "$GATEWAY_P"
 check_status "user-service" "$USER_PORT"
 check_status "expense-service" "$EXPENSE_PORT"

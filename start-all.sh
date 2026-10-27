@@ -22,7 +22,6 @@ EXPENSE_PORT="${EXPENSE_SERVICE_PORT:-8082}"
 P2P_PORT="${P2P_SERVICE_PORT:-8084}"
 CC_PORT="${CREDITCARD_SERVICE_PORT:-8086}"
 GATEWAY_P="${GATEWAY_PORT:-8080}"
-FRONTEND_P="${FRONTEND_PORT:-5173}"
 JAVA_OPTS="${JAVA_OPTS:--XX:+UseSerialGC -XX:ActiveProcessorCount=1}"
 read -r -a JAVA_ARGS <<< "$JAVA_OPTS"
 
@@ -41,6 +40,24 @@ for jar in "${SERVICE_JARS[@]}"; do
         exit 1
     fi
 done
+
+if ! command -v nginx > /dev/null 2>&1; then
+    echo "NGINX is not installed. Install it with: sudo apt install nginx"
+    exit 1
+fi
+
+if [ ! -f "$DIR/financeX-ui/dist/index.html" ]; then
+    echo "Missing frontend build: $DIR/financeX-ui/dist/index.html"
+    echo "Deploy the built financeX-ui/dist directory before starting FinanceX."
+    exit 1
+fi
+
+sudo install -d -m 755 /var/www/financex /etc/nginx/sites-available /etc/nginx/sites-enabled
+sudo rsync -a --delete "$DIR/financeX-ui/dist/" /var/www/financex/
+sudo install -m 644 "$DIR/financeX-ui/nginx.conf" /etc/nginx/sites-available/financex
+sudo ln -sfn /etc/nginx/sites-available/financex /etc/nginx/sites-enabled/financex
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo nginx -t
 
 # Helper function to start a service if not already running
 start_service() {
@@ -63,16 +80,15 @@ start_service "p2p-service" "${SERVICE_JARS[2]}" "$P2P_PORT"
 start_service "creditcard-service" "${SERVICE_JARS[3]}" "$CC_PORT"
 start_service "financeX-core" "${SERVICE_JARS[4]}" "$GATEWAY_P"
 
-# Start Frontend
-if lsof -iTCP:$FRONTEND_P -sTCP:LISTEN > /dev/null 2>&1; then
-    echo " [ALREADY RUNNING] financeX-ui on port $FRONTEND_P"
+sudo systemctl enable nginx
+if sudo systemctl is-active --quiet nginx; then
+    sudo systemctl reload nginx
 else
-    echo " [STARTING] financeX-ui on port $FRONTEND_P..."
-    (cd "$DIR/financeX-ui" && npm run dev > "$LOG_DIR/financeX-ui.log" 2>&1) &
+    sudo systemctl start nginx
 fi
 
 echo "========================================================"
 echo " All services launched! Check status with: ./status.sh"
 echo " Stop all services anytime with:         ./stop-all.sh"
-echo " Access frontend at:                     http://localhost:$FRONTEND_P"
+echo " Access frontend at:                     http://localhost/"
 echo "========================================================"
