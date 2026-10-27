@@ -23,11 +23,29 @@ P2P_PORT="${P2P_SERVICE_PORT:-8084}"
 CC_PORT="${CREDITCARD_SERVICE_PORT:-8086}"
 GATEWAY_P="${GATEWAY_PORT:-8080}"
 FRONTEND_P="${FRONTEND_PORT:-5173}"
+JAVA_OPTS="${JAVA_OPTS:--XX:+UseSerialGC -XX:ActiveProcessorCount=1}"
+read -r -a JAVA_ARGS <<< "$JAVA_OPTS"
+
+SERVICE_JARS=(
+    "$DIR/user-service/target/user-service-0.0.1-SNAPSHOT.jar"
+    "$DIR/expense-service/target/expense-service-0.0.1-SNAPSHOT.jar"
+    "$DIR/p2p-service/target/p2p-service-0.0.1-SNAPSHOT.jar"
+    "$DIR/creditcard-service/target/creditcard-service-0.0.1-SNAPSHOT.jar"
+    "$DIR/financeX-core/target/financex-core-0.0.1-SNAPSHOT.jar"
+)
+
+for jar in "${SERVICE_JARS[@]}"; do
+    if [ ! -f "$jar" ]; then
+        echo "Missing service JAR: $jar"
+        echo "Build the services first with: bash ./build-services.sh"
+        exit 1
+    fi
+done
 
 # Helper function to start a service if not already running
 start_service() {
     local name=$1
-    local dir=$2
+    local jar=$2
     local port=$3
     local log="$LOG_DIR/$name.log"
 
@@ -35,15 +53,15 @@ start_service() {
         echo " [ALREADY RUNNING] $name on port $port"
     else
         echo " [STARTING] $name on port $port..."
-        (cd "$DIR/$dir" && ./mvnw spring-boot:run > "$log" 2>&1) &
+        java "${JAVA_ARGS[@]}" -jar "$jar" --server.port="$port" > "$log" 2>&1 &
     fi
 }
 
-start_service "user-service" "user-service" "$USER_PORT"
-start_service "expense-service" "expense-service" "$EXPENSE_PORT"
-start_service "p2p-service" "p2p-service" "$P2P_PORT"
-start_service "creditcard-service" "creditcard-service" "$CC_PORT"
-start_service "financeX-core" "financeX-core" "$GATEWAY_P"
+start_service "user-service" "${SERVICE_JARS[0]}" "$USER_PORT"
+start_service "expense-service" "${SERVICE_JARS[1]}" "$EXPENSE_PORT"
+start_service "p2p-service" "${SERVICE_JARS[2]}" "$P2P_PORT"
+start_service "creditcard-service" "${SERVICE_JARS[3]}" "$CC_PORT"
+start_service "financeX-core" "${SERVICE_JARS[4]}" "$GATEWAY_P"
 
 # Start Frontend
 if lsof -iTCP:$FRONTEND_P -sTCP:LISTEN > /dev/null 2>&1; then
